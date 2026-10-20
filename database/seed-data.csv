@@ -1,0 +1,13 @@
+AssetID,Category,Name,Symbol,Currency,CurrentPrice,Exchange,Sector,FundCategory,TrackingIndex,Issuer,FaceValue,CouponRate,MaturityDate
+A001,STOCK,Reliance Industries,RELIANCE,INR,2450.50,NSE,Energy,,,,,,,
+A002,STOCK,Tata Consultancy Services,TCS,INR,3850.00,NSE,IT Services,,,,,,,
+A003,STOCK,Infosys,INFY,INR,1520.75,NSE,IT Services,,,,,,,
+A004,STOCK,HDFC Bank,HDFCBANK,INR,1680.25,NSE,Banking,,,,,,,
+A005,STOCK,ITC,ITC,INR,465.40,NSE,Consumer Goods,,,,,,,
+A006,STOCK,Tata Motors,TATAMOTORS,INR,980.60,NSE,Automobile,,,,,,,
+A007,ETF,Nifty 50 Index Fund,NIFTYBEES,INR,250.75,,,Large Cap,Nifty 50,,,,,
+A008,ETF,Gold Exchange Traded Fund,GOLDBEES,INR,62.30,,,Commodity,Domestic gold price,,,,,
+A009,ETF,Bank Index Fund,BANKBEES,INR,520.10,,,Sectoral,Nifty Bank,,,,,
+A010,BOND,Govt Bond 2034,Govt Bond 2034,INR,985.00,,,,,,Government of India,1000.00,7.10,2034-06-15
+A011,BOND,Govt Bond 2030,Govt Bond 2030,INR,1002.50,,,,,,Government of India,1000.00,6.80,2030-03-20
+A012,BOND,Sample Corporate Bond 2028,Corporate Bond 2028,INR,995.00,,,,,,Sample Housing Finance Ltd,1000.00,7.60,2028-09-30
