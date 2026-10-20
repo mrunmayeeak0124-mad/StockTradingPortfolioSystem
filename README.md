@@ -115,27 +115,7 @@ Unlike basic trading calculators or static portfolio loggers, **InvestIQ** integ
 
 ---
 
-## 🚀 7. Step-by-Step Execution Guide (IntelliJ IDEA)
-
-### Method 1: Running in IntelliJ IDEA (Recommended)
-1. **Open Project:** Launch IntelliJ IDEA, select **Open**, and navigate to the project directory: `StockTradingPortfolioSystem`.
-2. **Verify Project SDK:**
-   - Go to **File ➔ Project Structure ➔ Project**.
-   - Ensure the SDK is set to **Java 21**.
-   - Ensure Language Level is set to **21 - Records, pattern matching...**.
-3. **Launch Application:**
-   - In the project tree, navigate to: `src/main/java/com/stockportfolio/Launcher.java`.
-   - Right-click `Launcher.java` and click **Run 'Launcher.main()'**.
-   - The JavaFX desktop interface will initialize maximized with demo trader Alex Morgan and initial holdings.
-
-### Method 2: Running from Command Line / Terminal
-```powershell
-mvn javafx:run
-```
-
----
-
-## 🧪 8. Running Unit Tests
+## 🧪 7. Running Unit Tests
 
 The test suite includes **46 automated unit tests** verifying all business calculations and edge cases:
 - `TradingServiceTest` (15 tests: Buy/Sell math, fee deduction, limit order triggering, insufficient funds).
@@ -156,37 +136,3 @@ mvn test
 [INFO] BUILD SUCCESS
 ```
 
----
-
-## 🔄 8. Database Reset & Schema Details
-
-All persistent data is stored in a local SQLite database file at `database/stocktrading.db`.
-
-If you ever wish to reset the application to its original clean demonstration state:
-1. Close the running application.
-2. Delete the file `database/stocktrading.db`.
-3. Re-run `Launcher.java`. The `DatabaseManager` and `DataSeeder` will automatically recreate all tables and re-populate the demo assets, initial trader, and default financial profile.
-
----
-
-## 📝 9. Viva Voce Questions & Answers (OOP Focus)
-
-### Q1: Why did you use `BigDecimal` instead of `double` for monetary calculations?
-> **Answer:** `double` and `float` use IEEE 754 binary floating-point representation, which cannot accurately represent fractional decimal values like `0.10` or `0.01` (causing rounding errors like `0.30000000000000004`). In financial systems, every paisa counts. `BigDecimal` provides arbitrary-precision signed decimal numbers with explicit control over rounding modes (`RoundingMode.HALF_UP`).
-
-### Q2: How did you implement multithreading in this application?
-> **Answer:** We implemented multithreading in two distinct areas:
-> 1. In `MarketSimulationScheduler`, a `ScheduledExecutorService` runs a background daemon thread (`Market-Simulation-Worker`) that simulates live price ticks and evaluates pending limit orders every 5 seconds. To prevent UI thread freezing and race conditions, state updates are dispatched safely to the JavaFX Application Thread via `Platform.runLater()`.
-> 2. In `DataExportView`, generating CSV reports runs asynchronously in dedicated worker threads, ensuring the UI remains 100% responsive during disk file I/O operations.
-
-### Q3: How did you implement polymorphism in the asset and order structures?
-> **Answer:** We created abstract base classes `Asset` and `Order`. Subclasses such as `Stock`, `ETF`, and `Bond` override the abstract method `getDetails()` to return asset-specific descriptions. Similarly, `BuyOrder` and `SellOrder` implement their own order execution logic polymorphically.
-
-### Q4: What collections did you use and why?
-> **Answer:**
-> - `Map<String, Position>` in `Portfolio` provides $O(1)$ constant time lookups when querying whether a stock is already owned.
-> - `Set<String>` in `Watchlist` guarantees uniqueness so that an asset cannot be favorited multiple times.
-> - `List<Transaction>` preserves the chronological insertion order of financial audit events.
-
-### Q5: How is database consistency maintained during a trade?
-> **Answer:** Transactions are managed using SQLite connection transactions (`conn.setAutoCommit(false)`). When a trade executes, four atomic actions take place: updating trader cash, updating asset position, inserting the transaction log, and updating the order status. If any operation fails, `conn.rollback()` is executed, preventing partial updates.
