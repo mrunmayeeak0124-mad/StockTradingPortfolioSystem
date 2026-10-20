@@ -227,6 +227,37 @@ public class FinancialAdvisorService implements AdvisorService {
             ));
         }
 
+        // ---------------- Rule 7: 50/30/20 Budgeting Rule Analysis ----------------
+        if (profile.getMonthlyIncome().signum() > 0) {
+            BigDecimal savingsRate = profile.getSavingsRate();
+            BigDecimal recommendedSavings = profile.getRecommendedSavingsTwenty();
+            BigDecimal actualSurplus = profile.getMonthlySurplus();
+            if (savingsRate.compareTo(new BigDecimal("20.00")) < 0) {
+                list.add(new AdvisorRecommendation(
+                        traderId, null, RecommendationCategory.BUDGETING_FRAMEWORK,
+                        "50/30/20 Budgeting Gap: Low Savings Rate",
+                        "Your current savings rate is " + savingsRate + "% (₹" + actualSurplus + "/month), falling below the recommended 20% minimum (₹" + recommendedSavings + "/month).",
+                        "Under the 50/30/20 rule, your net take-home pay is split into 50% for Needs, 30% for Wants, and 20% for Savings & Investing. Target allocating at least ₹" + recommendedSavings + "/month directly into mutual funds, retirement, or an emergency buffer.",
+                        "Needs (50%): ₹" + profile.getRecommendedNeedsFifty() + ", Wants (30%): ₹" + profile.getRecommendedWantsThirty() + ", Savings (20%): ₹" + recommendedSavings + "."
+                ));
+            }
+        }
+
+        // ---------------- Rule 8: 70/15/15 Financial Framework Analysis ----------------
+        if (profile.getMonthlyIncome().signum() > 0) {
+            BigDecimal expenseRatio = profile.getMonthlyExpenses().multiply(new BigDecimal("100"))
+                    .divide(profile.getMonthlyIncome(), 2, RoundingMode.HALF_UP);
+            if (expenseRatio.compareTo(new BigDecimal("70.00")) > 0) {
+                list.add(new AdvisorRecommendation(
+                        traderId, null, RecommendationCategory.BUDGETING_FRAMEWORK,
+                        "70/15/15 Framework: Living Expenses Exceed 70%",
+                        "Your monthly living expenses represent " + expenseRatio + "% of income, exceeding the 70% framework ceiling by " + expenseRatio.subtract(new BigDecimal("70.00")) + "%.",
+                        "The 70/15/15 alternative framework caps total living expenses (needs + wants) at 70% (₹" + profile.getRecommendedLivingExpensesSeventy() + "), channeling 15% (₹" + profile.getRecommendedInvestingFifteen() + ") to long-term investing and 15% (₹" + profile.getRecommendedDebtOrEmergencyFifteen() + ") to debt repayment/emergency cushion. Once debt is eliminated, that 15% shifts to investing, achieving a 30% investment rate (₹" + profile.getAcceleratedPostDebtInvestingThirty() + ").",
+                        "Target: Expenses ₹" + profile.getRecommendedLivingExpensesSeventy() + " (70%), Investing ₹" + profile.getRecommendedInvestingFifteen() + " (15%), Debt/Emergency ₹" + profile.getRecommendedDebtOrEmergencyFifteen() + " (15%)."
+                ));
+            }
+        }
+
         // Persist newly generated recommendations
         for (AdvisorRecommendation rec : list) {
             recommendationRepository.save(rec);

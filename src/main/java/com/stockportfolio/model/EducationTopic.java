@@ -156,6 +156,22 @@ public class EducationTopic {
                 "Establish a 3 to 6 month emergency buffer BEFORE committing capital to risky equities."
         ));
 
+        list.add(new EducationTopic(
+                "ED15", "The 50/30/20 Budgeting Rule", "Personal Finance & Budgeting",
+                "A balanced budgeting framework dividing monthly income into 50% Needs, 30% Wants, and 20% Savings & Investing.",
+                "The 50/30/20 rule is an intuitive personal budgeting standard: (1) 50% Needs covers survival non-negotiables (rent, groceries, basic utilities, insurance); (2) 30% Wants covers discretionary lifestyle desires (dining out, entertainment, gadgets, leisure); (3) 20% Savings & Investing ensures future wealth creation and emergency reserves.",
+                "On a monthly income of ₹50,000: ₹25,000 goes to rent and essentials, ₹15,000 to lifestyle and dining, and ₹10,000 directly into stocks, ETFs, and liquid savings.",
+                "Ensures you enjoy today's lifestyle while systematically securing a 20% minimum savings habit for the future."
+        ));
+
+        list.add(new EducationTopic(
+                "ED16", "The 70/15/15 Financial Framework", "Personal Finance & Budgeting",
+                "A framework allocating 70% to Living Expenses, 15% to Investing, and 15% to Debt Repayment or Emergency Savings.",
+                "This pragmatic rule unifies daily life: 70% covers all living expenses (needs and wants combined). 15% is immediately invested into long-term compounding assets. The remaining 15% aggressively attacks debt or builds your emergency fund. Crucially, once non-mortgage debts are cleared, that 15% shifts directly into investing, catapulting your investment rate to an accelerated 30%!",
+                "On a monthly income of ₹60,000: ₹42,000 covers all monthly living expenses, ₹9,000 goes to equity investments, and ₹9,000 repays loans. Once debt-free, ₹18,000 (30%) is invested every month.",
+                "Provides clear discipline for debt elimination with an automatic acceleration pathway to 30% long-term wealth compounding."
+        ));
+
         return list;
     }
 }

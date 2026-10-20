@@ -88,15 +88,34 @@ com.stockportfolio
 7. **Virtual Wallet:** Safe virtual deposit terminal (1-click preset buttons: ₹10,000, ₹50,000, ₹1,00,000) with complete deposit audit trail.
 8. **Transaction History:** Immutable historical ledger of every BUY, SELL, and DEPOSIT event with date filtering and full transaction details.
 9. **Market Insights & FX:** Comparative multi-asset price performance chart and simulated currency converter supporting INR, USD, EUR, and GBP.
-10. **Educational Financial Advisor:** Rule-based diagnostic engine checking emergency fund health (< 3 months buffer), debt-to-income (DTI > 35%), single-stock concentration (> 25%), and target asset allocation drift.
+10. **Educational Financial Advisor:** Rule-based diagnostic engine checking emergency fund health (< 3 months buffer), debt-to-income (DTI > 35%), single-stock concentration (> 25%), and target asset allocation drift, coupled with interactive **50/30/20 Budgeting** (Needs vs. Wants vs. Savings) and **70/15/15 Financial Framework** (Living vs. Investing vs. Debt Buffer with 30% post-debt acceleration).
 11. **Financial Goal Planner:** Goal creation and tracking with monthly required savings calculation, compounding future value forecasting, and progress bars.
 12. **Home Purchase & Loan Planner:** Comprehensive mortgage EMI calculator, amortization summary, upfront cash requirement check (down payment + stamp duty + legal), and LTV limits.
-13. **Education Center:** Searchable financial literacy dictionary covering 14 key investment terms (P/E Ratio, Dollar-Cost Averaging, Compounding, Diversification, etc.).
+13. **Education Center:** Searchable financial literacy dictionary covering 16 key investment terms (P/E Ratio, Compounding, 50/30/20 Rule, 70/15/15 Framework, Diversification, LTV, EMI, etc.).
 14. **Data Export & Reporting:** Instant CSV report generator exporting `transactions.csv`, `portfolio_holdings.csv`, and `performance_summary.csv` to the local `exports/` folder asynchronously.
 
 ---
 
-## 🚀 6. Step-by-Step Execution Guide (IntelliJ IDEA)
+## ⭐ 6. Top 5+ Unique Features of InvestIQ
+
+Unlike basic trading calculators or static portfolio loggers, **InvestIQ** integrates 6 sophisticated features that distinguish it as an institutional-grade educational simulator:
+
+1. **Multithreaded Real-Time Market Ticker & Autonomous Limit Order Triggering:**  
+   A background daemon thread (`MarketSimulationScheduler`) dynamically updates asset quotes with realistic Brownian drift every 5 seconds. When quotes fluctuate, pending limit orders are evaluated and executed atomically without freezing the JavaFX user interface.
+2. **Dual Personal Finance Budgeting Engine (50/30/20 & 70/15/15 Rules):**  
+   Provides real-time mathematical breakdown comparing the trader's actual cash surplus against the standard **50% Needs / 30% Wants / 20% Savings** model and the **70% Living / 15% Investing / 15% Debt-Emergency** framework (which unlocks an accelerated 30% investing rate upon clearing debt).
+3. **Comprehensive Home Purchase & Mortgage Feasibility Planner:**  
+   Simulates real-world home buying by calculating monthly EMIs across tenures, breaking down principal vs. interest amortization, and enforcing upfront liquidity requirements (20% Down Payment + 6% Stamp Duty + Legal Fees) so users understand total acquisition costs.
+4. **Compounding Wealth Goal Simulator:**  
+   Allows users to define custom financial milestones (Retirement, House, Education) and calculates required monthly SIP contributions under both zero-growth linear models and compound interest models, displaying dynamic progress rings.
+5. **Multi-Currency Real-Time FX Conversion:**  
+   Facilitates cross-currency asset valuation across INR, USD, EUR, and GBP with instant exchange rate calculation, demonstrating foreign exchange risk in international portfolios.
+6. **Non-Blocking Asynchronous CSV Data Export Engine:**  
+   Offloads disk I/O file generation to independent worker threads (`new Thread(...).start()`), exporting audit-ready CSV reports for holdings and transactions with safe `Platform.runLater()` desktop notifications.
+
+---
+
+## 🚀 7. Step-by-Step Execution Guide (IntelliJ IDEA)
 
 ### Method 1: Running in IntelliJ IDEA (Recommended)
 1. **Open Project:** Launch IntelliJ IDEA, select **Open**, and navigate to the project directory: `StockTradingPortfolioSystem`.
@@ -116,14 +135,14 @@ mvn javafx:run
 
 ---
 
-## 🧪 7. Running Unit Tests
+## 🧪 8. Running Unit Tests
 
-The test suite includes **44 automated unit tests** verifying all business calculations and edge cases:
+The test suite includes **46 automated unit tests** verifying all business calculations and edge cases:
 - `TradingServiceTest` (15 tests: Buy/Sell math, fee deduction, limit order triggering, insufficient funds).
 - `PortfolioServiceTest` (8 tests: Cost basis averaging, realized/unrealized P/L, portfolio summary).
 - `MarketServiceTest` (6 tests: Mock price movement bounds, watchlist persistence, quote generation).
 - `MarketAnalyticsServiceTest` (5 tests: SMA windows, percentage changes, volatility calculation).
-- `FinancialAdvisorServiceTest` (5 tests: Allocation drift, concentration warnings, emergency fund rules).
+- `FinancialAdvisorServiceTest` (7 tests: Allocation drift, concentration warnings, 50/30/20 & 70/15/15 rules).
 - `HomeLoanCalculatorTest` (5 tests: Standard EMI math, zero-interest edge cases, upfront costs).
 
 To run all unit tests:
@@ -133,7 +152,7 @@ mvn test
 **Expected Result:**
 ```
 [INFO] Results:
-[INFO] Tests run: 44, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 

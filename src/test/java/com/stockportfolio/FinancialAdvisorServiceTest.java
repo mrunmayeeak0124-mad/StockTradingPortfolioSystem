@@ -129,6 +129,47 @@ class FinancialAdvisorServiceTest {
         assertEquals(RecommendationStatus.COMPLETED, rec.getStatus());
     }
 
+    @Test
+    @DisplayName("6. 50/30/20 and 70/15/15 framework allocation calculations")
+    void testBudgetingFrameworkCalculations() {
+        FinancialProfile profile = new FinancialProfile("T1");
+        profile.setMonthlyIncome(new BigDecimal("100000.00")); // 1 Lakh monthly income
+        profile.setMonthlyExpenses(new BigDecimal("60000.00"));
+        profile.setExistingDebt(new BigDecimal("50000.00"));
+
+        // 50/30/20 rule:
+        assertEquals(new BigDecimal("50000.00"), profile.getRecommendedNeedsFifty());
+        assertEquals(new BigDecimal("30000.00"), profile.getRecommendedWantsThirty());
+        assertEquals(new BigDecimal("20000.00"), profile.getRecommendedSavingsTwenty());
+
+        // 70/15/15 rule:
+        assertEquals(new BigDecimal("70000.00"), profile.getRecommendedLivingExpensesSeventy());
+        assertEquals(new BigDecimal("15000.00"), profile.getRecommendedInvestingFifteen());
+        assertEquals(new BigDecimal("15000.00"), profile.getRecommendedDebtOrEmergencyFifteen());
+        assertEquals(new BigDecimal("30000.00"), profile.getAcceleratedPostDebtInvestingThirty());
+    }
+
+    @Test
+    @DisplayName("7. 50/30/20 savings gap and 70/15/15 debt rules trigger advisory recommendations")
+    void testBudgetingRulesRecommendationTriggers() {
+        Trader trader = new Trader("T3", "Rohan", "rohan@example.com", new BigDecimal("5000.00"));
+        FinancialProfile profile = new FinancialProfile(
+                "T3", RiskPreference.BALANCED, "Wealth",
+                new BigDecimal("500000"), 5,
+                new BigDecimal("200000.00"), // available savings (healthy buffer)
+                new BigDecimal("50000.00"),  // income
+                new BigDecimal("45000.00"),  // expenses = 90% of income! Surplus = 5000 (only 10%, below 20%)
+                new BigDecimal("40000.00"),  // existing debt
+                false, LocalDateTime.now()
+        );
+
+        List<AdvisorRecommendation> recs = advisorService.generateRecommendations(trader, profile, List.of());
+
+        boolean hasBudgetingRec = recs.stream()
+                .anyMatch(r -> r.getCategory() == RecommendationCategory.BUDGETING_FRAMEWORK);
+        assertTrue(hasBudgetingRec, "Should generate recommendation when savings rate is under 20% or debt exists.");
+    }
+
     // ---------------- Stub repositories for isolated unit testing ----------------
 
     private static class StubProfileRepository extends FinancialProfileRepository {

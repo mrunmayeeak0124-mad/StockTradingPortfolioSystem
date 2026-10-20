@@ -9,7 +9,8 @@ public enum RecommendationCategory {
     ASSET_ALLOCATION("Strategic Asset Allocation"),
     DIVERSIFICATION("Portfolio Diversification"),
     GOAL_SAVINGS("Goal Progress & Savings Rate"),
-    RISK_ALIGNMENT("Risk Profile Realignment");
+    RISK_ALIGNMENT("Risk Profile Realignment"),
+    BUDGETING_FRAMEWORK("50/30/20 & 70/15/15 Frameworks");
 
     private final String displayName;
 

@@ -47,6 +47,19 @@ public class FinancialAdvisorView extends ScrollPane {
     private Label dtiLabel;
     private Label riskPrefLabel;
 
+    // 50/30/20 Framework labels
+    private Label needsFiftyLabel;
+    private Label wantsThirtyLabel;
+    private Label savingsTwentyLabel;
+    private Label fiftySummaryLabel;
+
+    // 70/15/15 Framework labels
+    private Label livingSeventyLabel;
+    private Label investingFifteenLabel;
+    private Label debtFifteenLabel;
+    private Label postDebtThirtyLabel;
+    private Label seventySummaryLabel;
+
     // Allocation comparison
     private Label allocationComparisonText;
 
@@ -64,6 +77,7 @@ public class FinancialAdvisorView extends ScrollPane {
         buildHeader();
         buildDisclaimer();
         buildFinancialHealthCards();
+        buildBudgetingFrameworksSection();
         buildAllocationBenchmarkingSection();
         buildRecommendationsSection();
 
@@ -170,6 +184,99 @@ public class FinancialAdvisorView extends ScrollPane {
         return box;
     }
 
+    private void buildBudgetingFrameworksSection() {
+        VBox card = new VBox(16);
+        card.getStyleClass().add("content-card");
+        card.setPadding(new Insets(20));
+
+        Label title = new Label("Personal Finance Budgeting Frameworks (50/30/20 & 70/15/15)");
+        title.getStyleClass().add("section-title");
+
+        Label sub = new Label("Rule-based income allocation models to benchmark essential needs, lifestyle desires, debt elimination, and investment momentum.");
+        sub.getStyleClass().add("card-subtitle");
+
+        // Section 1: 50/30/20 Rule
+        VBox rule50Box = new VBox(10);
+        rule50Box.setStyle("-fx-background-color: #0b1120; -fx-padding: 16px; -fx-background-radius: 8px; -fx-border-color: #1e293b; -fx-border-radius: 8px;");
+        Label r50Title = new Label("📌 The 50/30/20 Budgeting Rule");
+        r50Title.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+        Label r50Desc = new Label("Standard balanced budget: 50% for Needs, 30% for Wants, and 20% for Savings & Investing.");
+        r50Desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+
+        GridPane g50 = new GridPane();
+        g50.setHgap(14);
+        g50.setVgap(10);
+
+        needsFiftyLabel = new Label("₹0.00");
+        VBox nBox = createMetricBox("50% Needs (Max)", needsFiftyLabel, "Rent, groceries, utilities, basics");
+
+        wantsThirtyLabel = new Label("₹0.00");
+        VBox wBox = createMetricBox("30% Wants (Cap)", wantsThirtyLabel, "Dining, leisure, subscriptions");
+
+        savingsTwentyLabel = new Label("₹0.00");
+        VBox sBox = createMetricBox("20% Savings (Target)", savingsTwentyLabel, "Stocks, ETFs, emergency cash");
+
+        g50.add(nBox, 0, 0);
+        g50.add(wBox, 1, 0);
+        g50.add(sBox, 2, 0);
+
+        for (int i = 0; i < 3; i++) {
+            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            cc.setPercentWidth(33.33);
+            g50.getColumnConstraints().add(cc);
+        }
+
+        fiftySummaryLabel = new Label();
+        fiftySummaryLabel.setWrapText(true);
+        fiftySummaryLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 13px;");
+
+        rule50Box.getChildren().addAll(r50Title, r50Desc, g50, fiftySummaryLabel);
+
+        // Section 2: 70/15/15 Rule
+        VBox rule70Box = new VBox(10);
+        rule70Box.setStyle("-fx-background-color: #0b1120; -fx-padding: 16px; -fx-background-radius: 8px; -fx-border-color: #1e293b; -fx-border-radius: 8px;");
+        Label r70Title = new Label("📌 The 70/15/15 Financial Framework");
+        r70Title.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
+        Label r70Desc = new Label("Structured cashflow: 70% for Living Expenses, 15% for Investing, and 15% for Debt Repayment or Emergency Buffer (Expands to 30% investing after debt!).");
+        r70Desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+
+        GridPane g70 = new GridPane();
+        g70.setHgap(14);
+        g70.setVgap(10);
+
+        livingSeventyLabel = new Label("₹0.00");
+        VBox lBox = createMetricBox("70% Living Expenses", livingSeventyLabel, "Needs & lifestyle combined");
+
+        investingFifteenLabel = new Label("₹0.00");
+        VBox invBox = createMetricBox("15% Core Investing", investingFifteenLabel, "Long-term market compounding");
+
+        debtFifteenLabel = new Label("₹0.00");
+        VBox debtBox = createMetricBox("15% Debt / Buffer", debtFifteenLabel, "Pay loans / build rainy-day");
+
+        postDebtThirtyLabel = new Label("₹0.00");
+        VBox accBox = createMetricBox("30% Post-Debt Rate", postDebtThirtyLabel, "Invested once debt is zero!");
+
+        g70.add(lBox, 0, 0);
+        g70.add(invBox, 1, 0);
+        g70.add(debtBox, 2, 0);
+        g70.add(accBox, 3, 0);
+
+        for (int i = 0; i < 4; i++) {
+            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            cc.setPercentWidth(25.0);
+            g70.getColumnConstraints().add(cc);
+        }
+
+        seventySummaryLabel = new Label();
+        seventySummaryLabel.setWrapText(true);
+        seventySummaryLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 13px;");
+
+        rule70Box.getChildren().addAll(r70Title, r70Desc, g70, seventySummaryLabel);
+
+        card.getChildren().addAll(title, sub, rule50Box, rule70Box);
+        container.getChildren().add(card);
+    }
+
     private void buildAllocationBenchmarkingSection() {
         VBox card = new VBox(12);
         card.getStyleClass().add("content-card");
@@ -268,6 +375,38 @@ public class FinancialAdvisorView extends ScrollPane {
         emergencyFundLabel.setText(profile.getEmergencyFundMonthsCovered().toPlainString() + " Months");
         dtiLabel.setText(UIContext.formatPercent(profile.getDebtToIncomeRatio()));
         riskPrefLabel.setText(profile.getRiskPreference().name());
+
+        // 50/30/20 values
+        needsFiftyLabel.setText(UIContext.formatMoney(profile.getRecommendedNeedsFifty()));
+        wantsThirtyLabel.setText(UIContext.formatMoney(profile.getRecommendedWantsThirty()));
+        savingsTwentyLabel.setText(UIContext.formatMoney(profile.getRecommendedSavingsTwenty()));
+
+        BigDecimal surplus = profile.getMonthlySurplus();
+        BigDecimal targetSavings20 = profile.getRecommendedSavingsTwenty();
+        if (surplus.compareTo(targetSavings20) >= 0) {
+            fiftySummaryLabel.setText("✅ Excellent! Your current monthly surplus of " + UIContext.formatMoney(surplus)
+                    + " meets or exceeds the 20% savings target (" + UIContext.formatMoney(targetSavings20) + ").");
+        } else {
+            fiftySummaryLabel.setText("⚠️ Gap Detected: Your surplus is " + UIContext.formatMoney(surplus)
+                    + ", which is below the recommended 20% savings target of " + UIContext.formatMoney(targetSavings20)
+                    + ". Check if wants or non-essential expenses can be optimized.");
+        }
+
+        // 70/15/15 values
+        livingSeventyLabel.setText(UIContext.formatMoney(profile.getRecommendedLivingExpensesSeventy()));
+        investingFifteenLabel.setText(UIContext.formatMoney(profile.getRecommendedInvestingFifteen()));
+        debtFifteenLabel.setText(UIContext.formatMoney(profile.getRecommendedDebtOrEmergencyFifteen()));
+        postDebtThirtyLabel.setText(UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()));
+
+        if (profile.getExistingDebt().signum() > 0) {
+            seventySummaryLabel.setText("⚡ Active Debt (₹" + profile.getExistingDebt().toPlainString() + "): Allocate "
+                    + UIContext.formatMoney(profile.getRecommendedDebtOrEmergencyFifteen())
+                    + " (15%) every month towards accelerating debt elimination while sustaining 15% in investments. Once cleared, shift full 30% ("
+                    + UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()) + ") into investments!");
+        } else {
+            seventySummaryLabel.setText("🎉 Zero Debt Status: You are debt-free! You can deploy the full accelerated 30% ("
+                    + UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()) + ") monthly into long-term investing!");
+        }
 
         // Allocation comparison
         Map<AssetCategory, BigDecimal> actual = trader.getPortfolio().getAllocationByCategory();

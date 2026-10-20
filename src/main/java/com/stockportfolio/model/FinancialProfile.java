@@ -147,4 +147,41 @@ public class FinancialProfile {
         return existingDebt.multiply(new BigDecimal("100"))
                 .divide(annualIncome, 2, RoundingMode.HALF_UP);
     }
+
+    // ----------------- 50/30/20 & 70/15/15 Frameworks -----------------
+
+    /** 50% of monthly income for Needs (essential survival expenses: rent, groceries, utilities). */
+    public BigDecimal getRecommendedNeedsFifty() {
+        return monthlyIncome.multiply(new BigDecimal("0.50")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** 30% of monthly income for Wants (lifestyle choices: dining out, hobbies, entertainment). */
+    public BigDecimal getRecommendedWantsThirty() {
+        return monthlyIncome.multiply(new BigDecimal("0.30")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** 20% of monthly income for Savings & Investing (investment minimum, retirement, emergency fund). */
+    public BigDecimal getRecommendedSavingsTwenty() {
+        return monthlyIncome.multiply(new BigDecimal("0.20")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** 70% of monthly income for Living Expenses (combining needs and wants into one bucket). */
+    public BigDecimal getRecommendedLivingExpensesSeventy() {
+        return monthlyIncome.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** 15% of monthly income dedicated to long-term wealth investments. */
+    public BigDecimal getRecommendedInvestingFifteen() {
+        return monthlyIncome.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** 15% of monthly income dedicated to debt elimination or emergency cash buffer. */
+    public BigDecimal getRecommendedDebtOrEmergencyFifteen() {
+        return monthlyIncome.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /** Accelerated 30% investment rate achievable once debt is cleared and emergency cushion is full. */
+    public BigDecimal getAcceleratedPostDebtInvestingThirty() {
+        return monthlyIncome.multiply(new BigDecimal("0.30")).setScale(2, RoundingMode.HALF_UP);
+    }
 }
