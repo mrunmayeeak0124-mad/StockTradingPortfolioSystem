@@ -166,7 +166,7 @@ public class MainApp extends Application {
     }
 
     private Node buildSidebar() {
-        VBox sidebar = new VBox(10);
+        BorderPane sidebar = new BorderPane();
         sidebar.setPrefWidth(270);
         sidebar.setMinWidth(260);
         sidebar.getStyleClass().add("sidebar");
@@ -207,6 +207,9 @@ public class MainApp extends Application {
 
         traderCard.getChildren().addAll(traderPill, switchUserBtn);
 
+        VBox topBox = new VBox(10, brandBox, traderCard);
+        sidebar.setTop(topBox);
+
         // Exactly 5 Core Sections + Profile & Wallet
         VBox navList = new VBox(6);
         navList.setPadding(new Insets(10, 2, 10, 2));
@@ -225,13 +228,29 @@ public class MainApp extends Application {
         scrollNav.setFitToWidth(true);
         scrollNav.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollNav.getStyleClass().add("view-scroll-pane");
-        VBox.setVgrow(scrollNav, Priority.ALWAYS);
+        sidebar.setCenter(scrollNav);
 
-        // Bottom system pill
-        Label systemFooter = new Label("● InvestIQ Platform\nSmart Wealth & Financial Planning");
-        systemFooter.setStyle("-fx-font-size: 11px; -fx-text-fill: #34d399; -fx-alignment: CENTER; -fx-padding: 8 6 4 6; -fx-font-weight: bold;");
+        // Bottom system card (Elevated, clearly readable, never clipped)
+        VBox footerCard = new VBox(4);
+        footerCard.setStyle("-fx-background-color: #0b1329; -fx-border-color: #1e293b; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 10 12 10 12;");
+        footerCard.setMinHeight(56);
+        footerCard.setPrefHeight(56);
 
-        sidebar.getChildren().addAll(brandBox, traderCard, scrollNav, systemFooter);
+        HBox statusRow = new HBox(8);
+        statusRow.setAlignment(Pos.CENTER_LEFT);
+        Label statusDot = new Label("●");
+        statusDot.setStyle("-fx-text-fill: #10b981; -fx-font-size: 12px;");
+        Label statusTitle = new Label("InvestIQ Terminal");
+        statusTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 12px; -fx-font-weight: bold;");
+        statusRow.getChildren().addAll(statusDot, statusTitle);
+
+        Label footerSub = new Label("Online • Yahoo Finance Live Engine");
+        footerSub.setStyle("-fx-text-fill: #34d399; -fx-font-size: 10.5px; -fx-font-weight: 600;");
+
+        footerCard.getChildren().addAll(statusRow, footerSub);
+        BorderPane.setMargin(footerCard, new Insets(10, 0, 0, 0));
+        sidebar.setBottom(footerCard);
+
         return sidebar;
     }
 

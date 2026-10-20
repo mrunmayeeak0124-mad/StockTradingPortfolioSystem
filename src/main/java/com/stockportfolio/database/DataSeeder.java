@@ -45,6 +45,17 @@ public final class DataSeeder {
         try (Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM assets")) {
             if (rs.next() && rs.getInt(1) > 0) {
+                // Ensure AAPL is seeded even if database was previously initialized
+                try (Statement st2 = connection.createStatement();
+                     ResultSet rs2 = st2.executeQuery("SELECT COUNT(*) FROM assets WHERE symbol = 'AAPL'")) {
+                    if (rs2.next() && rs2.getInt(1) == 0) {
+                        Asset aapl = new Stock("A013", "Apple Inc.", "AAPL", "NASDAQ", "USD",
+                                "Consumer Technology", new BigDecimal("339.45"),
+                                "$3.55T (₹295L Cr)", new BigDecimal("4.85"), new BigDecimal("38.60"),
+                                48520000L, new BigDecimal("34.20"), new BigDecimal("343.46"), new BigDecimal("164.08"));
+                        new AssetRepository().save(connection, aapl);
+                    }
+                } catch (Exception ignored) {}
                 return;     // already seeded
             }
         }
@@ -176,6 +187,10 @@ public final class DataSeeder {
                 "Consumer Goods", new BigDecimal("465.40")));
         assets.add(new Stock("A006", "Tata Motors", "TATAMOTORS", "NSE", "INR",
                 "Automobile", new BigDecimal("980.60")));
+        assets.add(new Stock("A013", "Apple Inc.", "AAPL", "NASDAQ", "USD",
+                "Consumer Technology", new BigDecimal("339.45"),
+                "$3.55T (₹295L Cr)", new BigDecimal("4.85"), new BigDecimal("38.60"),
+                48520000L, new BigDecimal("34.20"), new BigDecimal("343.46"), new BigDecimal("164.08")));
 
         assets.add(new ETF("A007", "Nifty 50 Index Fund", "NIFTYBEES", "INR",
                 "Large Cap", "Nifty 50", new BigDecimal("250.75")));

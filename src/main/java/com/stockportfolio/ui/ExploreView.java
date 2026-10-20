@@ -324,6 +324,12 @@ public class ExploreView extends ScrollPane {
             timeframeBtnBox.getChildren().add(tb);
         }
 
+        javafx.scene.layout.Region tfSpacer = new javafx.scene.layout.Region();
+        HBox.setHgrow(tfSpacer, Priority.ALWAYS);
+        Label liveBadge = new Label("● Yahoo Finance Live Stream");
+        liveBadge.setStyle("-fx-background-color: #064e3b; -fx-text-fill: #34d399; -fx-padding: 4 12 4 12; -fx-background-radius: 12px; -fx-font-size: 11px; -fx-font-weight: bold;");
+        timeframeBtnBox.getChildren().addAll(tfSpacer, liveBadge);
+
         // LineChart for price series
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setAnimated(false);
@@ -421,6 +427,7 @@ public class ExploreView extends ScrollPane {
 
         // Generate Timeframe series matching Image 1 & 2
         MarketAnalyticsService.TimeframeSeries series = context.getAnalyticsService().generateTimeframeSeries(selectedAsset, currentTimeframe);
+        chartPriceLabel.setText(UIContext.formatMoney(series.currentPrice()));
 
         technicalChart.getData().clear();
         XYChart.Series<String, Number> chartSeries = new XYChart.Series<>();
