@@ -76,6 +76,10 @@ public final class HomeLoanCalculator {
         return new BigDecimal(Double.toString(emiAmount)).setScale(2, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal calculateEMI(BigDecimal principal, BigDecimal annualInterestRate, int tenureYears) {
+        return calculateEmi(principal, annualInterestRate, tenureYears);
+    }
+
     private static void validateInputs(BigDecimal housePrice, BigDecimal downPayment,
                                        BigDecimal annualInterestRate, int tenureYears,
                                        BigDecimal additionalCosts) {

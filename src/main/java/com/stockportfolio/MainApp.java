@@ -20,13 +20,17 @@ import com.stockportfolio.ui.AssetDetailsView;
 import com.stockportfolio.ui.DashboardView;
 import com.stockportfolio.ui.DataExportView;
 import com.stockportfolio.ui.EducationView;
+import com.stockportfolio.ui.ExploreView;
 import com.stockportfolio.ui.FinancialAdvisorView;
 import com.stockportfolio.ui.GoalsView;
 import com.stockportfolio.ui.HomePlannerView;
+import com.stockportfolio.ui.LoansView;
 import com.stockportfolio.ui.MarketExplorerView;
 import com.stockportfolio.ui.MarketInsightsView;
 import com.stockportfolio.ui.OrdersView;
 import com.stockportfolio.ui.PortfolioView;
+import com.stockportfolio.ui.ProfileAndWalletView;
+import com.stockportfolio.ui.ToolsView;
 import com.stockportfolio.ui.TradingView;
 import com.stockportfolio.ui.TransactionsView;
 import com.stockportfolio.ui.UIContext;
@@ -85,8 +89,7 @@ public class MainApp extends Application {
     private final Map<String, Button> navButtons = new HashMap<>();
     private String activeViewKey = "DASHBOARD";
 
-    private AssetDetailsView assetDetailsView;
-    private TradingView tradingView;
+    private ExploreView exploreView;
 
     private Map<String, Asset> assets;
     private MarketSimulationScheduler simulationScheduler;
@@ -118,26 +121,16 @@ public class MainApp extends Application {
         // 5. Initialize Multithreaded Background Simulation Scheduler
         simulationScheduler = new MarketSimulationScheduler(context);
 
-        // 6. Initialize Views
+        // 6. Initialize 5 Core Sections + Profile & Wallet
         views.put("DASHBOARD", new DashboardView(context));
-        views.put("MARKET", new MarketExplorerView(context));
 
-        assetDetailsView = new AssetDetailsView(context);
-        views.put("ASSET_DETAILS", assetDetailsView);
+        exploreView = new ExploreView(context);
+        views.put("EXPLORE", exploreView);
 
-        tradingView = new TradingView(context);
-        views.put("TRADING", tradingView);
-
-        views.put("ORDERS", new OrdersView(context));
-        views.put("PORTFOLIO", new PortfolioView(context));
-        views.put("WALLET", new WalletView(context));
-        views.put("TRANSACTIONS", new TransactionsView(context));
-        views.put("TRENDS", new MarketInsightsView(context));
         views.put("ADVISOR", new FinancialAdvisorView(context));
-        views.put("GOALS", new GoalsView(context));
-        views.put("HOME_PLANNER", new HomePlannerView(context));
-        views.put("EDUCATION", new EducationView(context));
-        views.put("EXPORT", new DataExportView(context));
+        views.put("TOOLS", new ToolsView(context));
+        views.put("LOANS", new LoansView(context));
+        views.put("PROFILE", new ProfileAndWalletView(context));
 
         // 7. Build Layout Structure
         rootLayout = new BorderPane();
@@ -158,7 +151,7 @@ public class MainApp extends Application {
         Scene scene = new Scene(rootLayout, 1260, 780);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
 
-        primaryStage.setTitle("InvestIQ — Stock Trading & Portfolio Management System (Virtual Investment Simulator)");
+        primaryStage.setTitle("InvestIQ — Stock Trading & Portfolio Management System");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1080);
         primaryStage.setMinHeight(650);
@@ -179,13 +172,13 @@ public class MainApp extends Application {
         sidebar.getStyleClass().add("sidebar");
         sidebar.setPadding(new Insets(16, 14, 16, 14));
 
-        // Brand Logo — Renamed to InvestIQ
+        // Brand Logo
         VBox brandBox = new VBox(2);
         brandBox.setPadding(new Insets(4, 8, 12, 8));
         Label brandTitle = new Label("InvestIQ");
         brandTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #38bdf8; -fx-letter-spacing: 1px;");
 
-        Label brandSub = new Label("Virtual Simulator & Advisor");
+        Label brandSub = new Label("Smart Trading & Advisory");
         brandSub.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         brandBox.getChildren().addAll(brandTitle, brandSub);
 
@@ -214,28 +207,19 @@ public class MainApp extends Application {
 
         traderCard.getChildren().addAll(traderPill, switchUserBtn);
 
-        // Nav groups inside a ScrollPane so all options are always visible on any display size
-        VBox navList = new VBox(3);
-        navList.setPadding(new Insets(4, 2, 8, 2));
+        // Exactly 5 Core Sections + Profile & Wallet
+        VBox navList = new VBox(6);
+        navList.setPadding(new Insets(10, 2, 10, 2));
 
-        addNavHeader(navList, "TRADING & PORTFOLIO");
+        addNavHeader(navList, "CORE SECTIONS");
         addNavBtn(navList, "DASHBOARD", "📊 Dashboard");
-        addNavBtn(navList, "MARKET", "🔍 Market Explorer");
-        addNavBtn(navList, "TRADING", "⚡ Trading Desk");
-        addNavBtn(navList, "ORDERS", "📋 Orders Book");
-        addNavBtn(navList, "PORTFOLIO", "💼 Open Holdings");
-        addNavBtn(navList, "WALLET", "💳 Virtual Wallet");
-        addNavBtn(navList, "TRANSACTIONS", "📜 Audit Ledger");
+        addNavBtn(navList, "EXPLORE", "🔍 Explore");
+        addNavBtn(navList, "ADVISOR", "💡 Advisor");
+        addNavBtn(navList, "TOOLS", "🛠️ Tools");
+        addNavBtn(navList, "LOANS", "🏦 Loans");
 
-        addNavHeader(navList, "MARKET INTEL");
-        addNavBtn(navList, "TRENDS", "📈 Trends & FX Rates");
-
-        addNavHeader(navList, "FINANCIAL PLANNING");
-        addNavBtn(navList, "ADVISOR", "🤖 AI Financial Advisor");
-        addNavBtn(navList, "GOALS", "🎯 Financial Goals");
-        addNavBtn(navList, "HOME_PLANNER", "🏠 Home Loan Planner");
-        addNavBtn(navList, "EDUCATION", "📚 Investor Education");
-        addNavBtn(navList, "EXPORT", "📥 Export Reports");
+        addNavHeader(navList, "ACCOUNT");
+        addNavBtn(navList, "PROFILE", "👤 Profile & Wallet");
 
         ScrollPane scrollNav = new ScrollPane(navList);
         scrollNav.setFitToWidth(true);
@@ -243,11 +227,11 @@ public class MainApp extends Application {
         scrollNav.getStyleClass().add("view-scroll-pane");
         VBox.setVgrow(scrollNav, Priority.ALWAYS);
 
-        // Bottom simulation pill
-        Label simNotice = new Label("● VIRTUAL SIMULATION ONLY\nZero Real Money • Educational");
-        simNotice.setStyle("-fx-font-size: 10px; -fx-text-fill: #10b981; -fx-alignment: CENTER; -fx-padding: 8 6 4 6; -fx-font-weight: bold;");
+        // Bottom system pill
+        Label systemFooter = new Label("● InvestIQ Platform\nSmart Wealth & Financial Planning");
+        systemFooter.setStyle("-fx-font-size: 11px; -fx-text-fill: #34d399; -fx-alignment: CENTER; -fx-padding: 8 6 4 6; -fx-font-weight: bold;");
 
-        sidebar.getChildren().addAll(brandBox, traderCard, scrollNav, simNotice);
+        sidebar.getChildren().addAll(brandBox, traderCard, scrollNav, systemFooter);
         return sidebar;
     }
 
@@ -345,27 +329,34 @@ public class MainApp extends Application {
     }
 
     private void navigateTo(String key, Object param) {
-        Node targetView = views.get(key);
+        // Map legacy keys into the 5 Core Sections + Profile
+        String mappedKey = switch (key) {
+            case "MARKET", "TRADING", "ASSET_DETAILS", "EXPLORE" -> "EXPLORE";
+            case "WALLET", "PROFILE" -> "PROFILE";
+            case "GOALS", "EXPORT", "TRENDS", "TOOLS" -> "TOOLS";
+            case "HOME_PLANNER", "LOANS" -> "LOANS";
+            case "PORTFOLIO", "ORDERS", "TRANSACTIONS", "DASHBOARD" -> "DASHBOARD";
+            case "EDUCATION", "ADVISOR" -> "ADVISOR";
+            default -> "DASHBOARD";
+        };
+
+        Node targetView = views.get(mappedKey);
         if (targetView == null) return;
 
         // Pass parameter if applicable
-        if (param instanceof Asset asset) {
-            if ("ASSET_DETAILS".equals(key)) {
-                assetDetailsView.setAsset(asset);
-            } else if ("TRADING".equals(key)) {
-                tradingView.selectAsset(asset);
-            }
+        if (param instanceof Asset asset && "EXPLORE".equals(mappedKey) && exploreView != null) {
+            exploreView.selectAsset(asset);
         }
 
         // Update active nav button styling
         Button prev = navButtons.get(activeViewKey);
         if (prev != null) prev.getStyleClass().remove("nav-button-active");
 
-        Button next = navButtons.get(key);
+        Button next = navButtons.get(mappedKey);
         if (next != null) next.getStyleClass().add("nav-button-active");
 
-        activeViewKey = key;
-        currentSectionTitle.setText(formatSectionTitle(key));
+        activeViewKey = mappedKey;
+        currentSectionTitle.setText(formatSectionTitle(mappedKey));
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(targetView);
@@ -373,20 +364,12 @@ public class MainApp extends Application {
 
     private String formatSectionTitle(String key) {
         return switch (key) {
-            case "DASHBOARD" -> "Dashboard & Portfolio Overview";
-            case "MARKET" -> "Market Explorer";
-            case "ASSET_DETAILS" -> "Asset Technical Details & History";
-            case "TRADING" -> "Trading Execution Desk";
-            case "ORDERS" -> "Order Management Book";
-            case "PORTFOLIO" -> "Open Portfolio Holdings";
-            case "WALLET" -> "Virtual Wallet & Balances";
-            case "TRANSACTIONS" -> "Transaction Audit Ledger";
-            case "TRENDS" -> "Market Insights & FX Rates";
-            case "ADVISOR" -> "Rule-Based Financial Advisor";
-            case "GOALS" -> "Financial Goal Planning";
-            case "HOME_PLANNER" -> "Home Purchase & Loan Planner";
-            case "EDUCATION" -> "Investor Education Center";
-            case "EXPORT" -> "Export Reports & Backups";
+            case "DASHBOARD" -> "Dashboard & Investment Overview";
+            case "EXPLORE" -> "Market Explore & Trading Terminal";
+            case "ADVISOR" -> "Personal Financial Advisor & Wealth Strategist";
+            case "TOOLS" -> "Financial Engineering & Calculators (Tools)";
+            case "LOANS" -> "Institutional Lending & Credit Facilities (Loans)";
+            case "PROFILE" -> "User Profile & Wallet Management";
             default -> "InvestIQ Platform";
         };
     }

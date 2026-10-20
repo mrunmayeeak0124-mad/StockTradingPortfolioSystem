@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * A Trader is a User who trades with virtual money.
- * It now owns a Portfolio (composition: a Trader HAS-A Portfolio).
+ * A Trader is a User who trades assets and manages a portfolio.
+ * It owns a Portfolio (composition: a Trader HAS-A Portfolio).
  */
 public class Trader extends User {
 
@@ -36,7 +36,7 @@ public class Trader extends User {
         this.riskPreference = riskPreference;
     }
 
-    /** Add virtual money. Only positive amounts are allowed. */
+    /** Add funds to wallet. Only positive amounts are allowed. */
     public void deposit(BigDecimal amount) {
         if (amount == null || amount.signum() <= 0) {
             throw new InvalidInputException("Deposit must be greater than zero.");
@@ -44,7 +44,7 @@ public class Trader extends User {
         cashBalance = cashBalance.add(amount).setScale(2, RoundingMode.HALF_UP);
     }
 
-    /** Remove virtual money. Fails (and changes nothing) if cash is not enough. */
+    /** Withdraw funds. Fails (and changes nothing) if cash is not enough. */
     public void withdraw(BigDecimal amount) throws InsufficientFundsException {
         if (amount == null || amount.signum() <= 0) {
             throw new InvalidInputException("Amount must be greater than zero.");

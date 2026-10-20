@@ -23,8 +23,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Virtual Wallet & Trading Account Management view.
- * Handles virtual cash deposits, tracks liquidity reserves, and audits deposit records.
+ * Wallet & Trading Account Management view.
+ * Handles cash deposits, tracks liquidity reserves, and audits deposit records.
  */
 public class WalletView extends ScrollPane {
 
@@ -59,10 +59,10 @@ public class WalletView extends ScrollPane {
 
     private void buildHeader() {
         VBox titleBox = new VBox(4);
-        Label title = new Label("Virtual Wallet & Account Funds");
+        Label title = new Label("Wallet & Account Funds");
         title.getStyleClass().add("view-title");
 
-        Label subtitle = new Label("Manage simulated liquidity reserves. Safe simulation only — no real financial accounts or cards.");
+        Label subtitle = new Label("Manage account liquidity reserves. Safe simulation — no real financial accounts or cards.");
         subtitle.getStyleClass().add("view-subtitle");
         titleBox.getChildren().addAll(title, subtitle);
 
@@ -234,10 +234,10 @@ public class WalletView extends ScrollPane {
         try {
             Transaction tx = context.getTradingService().deposit(amount);
             context.notifyDataChanged();
-            showAlert(Alert.AlertType.INFORMATION, "Virtual Deposit Confirmed",
-                    "Successfully credited " + UIContext.formatMoney(tx.getNetAmount()) + " to virtual wallet.\n"
+            showAlert(Alert.AlertType.INFORMATION, "Deposit Confirmed",
+                    "Successfully credited " + UIContext.formatMoney(tx.getNetAmount()) + " to wallet.\n"
                             + "Audit Transaction ID: " + tx.getTransactionId() + "\n"
-                            + "Updated Virtual Cash: " + UIContext.formatMoney(context.getTrader().getCashBalance()));
+                            + "Updated Cash Balance: " + UIContext.formatMoney(context.getTrader().getCashBalance()));
             depositAmountField.setText("50000.00");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Deposit Error", e.getMessage());

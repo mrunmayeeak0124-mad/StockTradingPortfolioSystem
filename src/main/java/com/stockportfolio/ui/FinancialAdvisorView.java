@@ -21,6 +21,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -28,12 +29,15 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Educational Financial Advisor View: rule-based financial planning, asset allocation benchmarking,
- * health diagnosis, and actionable recommendation status lifecycle management.
+ * Institutional Financial Advisor View:
+ * 1. Personal Salary & Expense Allocation Planner ("Aplya X salary madhe kiti kuthe kharcha aani kiti kuthe investment keli pahije")
+ * 2. Interactive Advisor Q&A Chat Terminal (Answers any investment, budgeting, risk or loan query)
+ * 3. Strategic Asset Allocation & 8 Rule-Based Actionable Recommendations
  */
 public class FinancialAdvisorView extends ScrollPane {
 
@@ -47,18 +51,14 @@ public class FinancialAdvisorView extends ScrollPane {
     private Label dtiLabel;
     private Label riskPrefLabel;
 
-    // 50/30/20 Framework labels
-    private Label needsFiftyLabel;
-    private Label wantsThirtyLabel;
-    private Label savingsTwentyLabel;
-    private Label fiftySummaryLabel;
+    // Salary Planner UI
+    private TextField salaryInputField;
+    private ComboBox<String> frameworkCombo;
+    private VBox salaryPlanResultBox;
 
-    // 70/15/15 Framework labels
-    private Label livingSeventyLabel;
-    private Label investingFifteenLabel;
-    private Label debtFifteenLabel;
-    private Label postDebtThirtyLabel;
-    private Label seventySummaryLabel;
+    // Interactive Advisor Chat UI
+    private TextField questionInput;
+    private TextArea chatConversationArea;
 
     // Allocation comparison
     private Label allocationComparisonText;
@@ -71,13 +71,13 @@ public class FinancialAdvisorView extends ScrollPane {
         setFitToWidth(true);
         getStyleClass().add("view-scroll-pane");
 
-        container.setPadding(new Insets(28));
+        container.setPadding(new Insets(26));
         container.getStyleClass().add("view-container");
 
         buildHeader();
-        buildDisclaimer();
         buildFinancialHealthCards();
-        buildBudgetingFrameworksSection();
+        buildSalaryAllocationPlannerSection();
+        buildInteractiveAdvisorChatSection();
         buildAllocationBenchmarkingSection();
         buildRecommendationsSection();
 
@@ -88,10 +88,10 @@ public class FinancialAdvisorView extends ScrollPane {
 
     private void buildHeader() {
         VBox titleBox = new VBox(4);
-        Label title = new Label("Rule-Based Educational Financial Advisor");
+        Label title = new Label("Personal Financial Advisor & Wealth Strategist");
         title.getStyleClass().add("view-title");
 
-        Label subtitle = new Label("Personalized guidance evaluating risk tolerance, asset allocation alignment, and savings feasibility.");
+        Label subtitle = new Label("Personalized financial guidance: itemized salary budgeting, investment allocation breakdown, interactive Q&A assistant, and portfolio health audit.");
         subtitle.getStyleClass().add("view-subtitle");
         titleBox.getChildren().addAll(title, subtitle);
 
@@ -99,7 +99,7 @@ public class FinancialAdvisorView extends ScrollPane {
         editProfileBtn.getStyleClass().addAll("btn", "btn-secondary");
         editProfileBtn.setOnAction(e -> showEditProfileDialog());
 
-        Button rerunBtn = new Button("✨ Run Advisor Engine");
+        Button rerunBtn = new Button("✨ Run Portfolio Audit");
         rerunBtn.getStyleClass().addAll("btn", "btn-primary");
         rerunBtn.setOnAction(e -> handleRunAdvisor());
 
@@ -112,24 +112,12 @@ public class FinancialAdvisorView extends ScrollPane {
         container.getChildren().add(header);
     }
 
-    private void buildDisclaimer() {
-        HBox banner = new HBox(12);
-        banner.getStyleClass().addAll("info-banner", "banner-warning");
-        banner.setPadding(new Insets(12, 16, 12, 16));
-
-        Label text = new Label("⚠️ EDUCATIONAL DISCLAIMER: This advisor module provides rule-based simulations and pedagogical guidance for academic demonstration only. It does not provide personalized investment advice, guaranteed returns, or certified fiduciary services.");
-        text.setWrapText(true);
-        text.getStyleClass().add("font-semibold");
-        banner.getChildren().add(text);
-        container.getChildren().add(banner);
-    }
-
     private void buildFinancialHealthCards() {
         VBox card = new VBox(14);
         card.getStyleClass().add("content-card");
         card.setPadding(new Insets(20));
 
-        Label title = new Label("Financial Health & Cashflow Overview");
+        Label title = new Label("Financial Health & Cashflow Diagnostics");
         title.getStyleClass().add("section-title");
 
         GridPane grid = new GridPane();
@@ -143,13 +131,13 @@ public class FinancialAdvisorView extends ScrollPane {
         VBox c2 = createMetricBox("Savings Rate", savingsRateLabel, "Surplus / Monthly Income");
 
         emergencyFundLabel = new Label("0.0 Months");
-        VBox c3 = createMetricBox("Emergency Buffer", emergencyFundLabel, "Liquid cash / expenses");
+        VBox c3 = createMetricBox("Emergency Cushion", emergencyFundLabel, "Liquid cash / monthly expenses");
 
         dtiLabel = new Label("0.00%");
         VBox c4 = createMetricBox("Debt-to-Income (DTI)", dtiLabel, "Debt / Annual Income");
 
         riskPrefLabel = new Label("BALANCED");
-        VBox c5 = createMetricBox("Risk Profile", riskPrefLabel, "Investment risk preference");
+        VBox c5 = createMetricBox("Risk Profile", riskPrefLabel, "Current investment tolerance");
 
         grid.add(c1, 0, 0);
         grid.add(c2, 1, 0);
@@ -184,97 +172,267 @@ public class FinancialAdvisorView extends ScrollPane {
         return box;
     }
 
-    private void buildBudgetingFrameworksSection() {
+    /**
+     * Module 1: Salary Budgeting & Investment Allocator
+     * Answers: "In X amount salary, how much to spend, where to spend, and where/how much to invest"
+     */
+    private void buildSalaryAllocationPlannerSection() {
         VBox card = new VBox(16);
         card.getStyleClass().add("content-card");
         card.setPadding(new Insets(20));
 
-        Label title = new Label("Personal Finance Budgeting Frameworks (50/30/20 & 70/15/15)");
+        Label title = new Label("Personal Salary Budgeting & Investment Allocator");
         title.getStyleClass().add("section-title");
 
-        Label sub = new Label("Rule-based income allocation models to benchmark essential needs, lifestyle desires, debt elimination, and investment momentum.");
+        Label sub = new Label("Calculate exactly how much of your monthly income to spend on essentials, lifestyle desires, and exactly which assets to invest in.");
         sub.getStyleClass().add("card-subtitle");
 
-        // Section 1: 50/30/20 Rule
-        VBox rule50Box = new VBox(10);
-        rule50Box.setStyle("-fx-background-color: #0b1120; -fx-padding: 16px; -fx-background-radius: 8px; -fx-border-color: #1e293b; -fx-border-radius: 8px;");
-        Label r50Title = new Label("📌 The 50/30/20 Budgeting Rule");
-        r50Title.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
-        Label r50Desc = new Label("Standard balanced budget: 50% for Needs, 30% for Wants, and 20% for Savings & Investing.");
-        r50Desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+        HBox inputBar = new HBox(14);
+        inputBar.setAlignment(Pos.CENTER_LEFT);
 
-        GridPane g50 = new GridPane();
-        g50.setHgap(14);
-        g50.setVgap(10);
+        salaryInputField = new TextField("60000");
+        salaryInputField.setPromptText("Monthly Net Salary (₹)");
+        salaryInputField.setPrefWidth(180);
 
-        needsFiftyLabel = new Label("₹0.00");
-        VBox nBox = createMetricBox("50% Needs (Max)", needsFiftyLabel, "Rent, groceries, utilities, basics");
+        frameworkCombo = new ComboBox<>();
+        frameworkCombo.getItems().addAll("The 50/30/20 Budgeting Rule", "The 70/15/15 Financial Framework");
+        frameworkCombo.setValue("The 50/30/20 Budgeting Rule");
+        frameworkCombo.setPrefWidth(260);
 
-        wantsThirtyLabel = new Label("₹0.00");
-        VBox wBox = createMetricBox("30% Wants (Cap)", wantsThirtyLabel, "Dining, leisure, subscriptions");
+        Button calculateBtn = new Button("📊 Generate Itemized Plan");
+        calculateBtn.getStyleClass().addAll("btn", "btn-primary");
+        calculateBtn.setOnAction(e -> generateSalaryPlan());
 
-        savingsTwentyLabel = new Label("₹0.00");
-        VBox sBox = createMetricBox("20% Savings (Target)", savingsTwentyLabel, "Stocks, ETFs, emergency cash");
+        inputBar.getChildren().addAll(new Label("Enter Salary:"), salaryInputField, new Label("Framework:"), frameworkCombo, calculateBtn);
 
-        g50.add(nBox, 0, 0);
-        g50.add(wBox, 1, 0);
-        g50.add(sBox, 2, 0);
+        salaryPlanResultBox = new VBox(12);
+        salaryPlanResultBox.setStyle("-fx-background-color: #0b1120; -fx-padding: 16px; -fx-background-radius: 8px; -fx-border-color: #1e293b; -fx-border-radius: 8px;");
 
-        for (int i = 0; i < 3; i++) {
-            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
-            cc.setPercentWidth(33.33);
-            g50.getColumnConstraints().add(cc);
-        }
-
-        fiftySummaryLabel = new Label();
-        fiftySummaryLabel.setWrapText(true);
-        fiftySummaryLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 13px;");
-
-        rule50Box.getChildren().addAll(r50Title, r50Desc, g50, fiftySummaryLabel);
-
-        // Section 2: 70/15/15 Rule
-        VBox rule70Box = new VBox(10);
-        rule70Box.setStyle("-fx-background-color: #0b1120; -fx-padding: 16px; -fx-background-radius: 8px; -fx-border-color: #1e293b; -fx-border-radius: 8px;");
-        Label r70Title = new Label("📌 The 70/15/15 Financial Framework");
-        r70Title.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
-        Label r70Desc = new Label("Structured cashflow: 70% for Living Expenses, 15% for Investing, and 15% for Debt Repayment or Emergency Buffer (Expands to 30% investing after debt!).");
-        r70Desc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
-
-        GridPane g70 = new GridPane();
-        g70.setHgap(14);
-        g70.setVgap(10);
-
-        livingSeventyLabel = new Label("₹0.00");
-        VBox lBox = createMetricBox("70% Living Expenses", livingSeventyLabel, "Needs & lifestyle combined");
-
-        investingFifteenLabel = new Label("₹0.00");
-        VBox invBox = createMetricBox("15% Core Investing", investingFifteenLabel, "Long-term market compounding");
-
-        debtFifteenLabel = new Label("₹0.00");
-        VBox debtBox = createMetricBox("15% Debt / Buffer", debtFifteenLabel, "Pay loans / build rainy-day");
-
-        postDebtThirtyLabel = new Label("₹0.00");
-        VBox accBox = createMetricBox("30% Post-Debt Rate", postDebtThirtyLabel, "Invested once debt is zero!");
-
-        g70.add(lBox, 0, 0);
-        g70.add(invBox, 1, 0);
-        g70.add(debtBox, 2, 0);
-        g70.add(accBox, 3, 0);
-
-        for (int i = 0; i < 4; i++) {
-            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
-            cc.setPercentWidth(25.0);
-            g70.getColumnConstraints().add(cc);
-        }
-
-        seventySummaryLabel = new Label();
-        seventySummaryLabel.setWrapText(true);
-        seventySummaryLabel.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 13px;");
-
-        rule70Box.getChildren().addAll(r70Title, r70Desc, g70, seventySummaryLabel);
-
-        card.getChildren().addAll(title, sub, rule50Box, rule70Box);
+        card.getChildren().addAll(title, sub, inputBar, salaryPlanResultBox);
         container.getChildren().add(card);
+
+        // Run default generation
+        generateSalaryPlan();
+    }
+
+    private void generateSalaryPlan() {
+        try {
+            BigDecimal salary = new BigDecimal(salaryInputField.getText().trim());
+            if (salary.signum() <= 0) throw new NumberFormatException();
+
+            salaryPlanResultBox.getChildren().clear();
+            boolean is503020 = frameworkCombo.getValue().contains("50/30/20");
+
+            if (is503020) {
+                BigDecimal needs = salary.multiply(new BigDecimal("0.50")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal wants = salary.multiply(new BigDecimal("0.30")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal savings = salary.multiply(new BigDecimal("0.20")).setScale(2, RoundingMode.HALF_UP);
+
+                // Investment breakdown of the 20%
+                BigDecimal etfInv = savings.multiply(new BigDecimal("0.60")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal stockInv = savings.multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal bondInv = savings.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
+
+                Label planTitle = new Label("📋 50/30/20 Allocation Plan for Monthly Salary of " + UIContext.formatMoney(salary) + ":");
+                planTitle.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+                Label n1 = new Label("• 50% Essential Needs (" + UIContext.formatMoney(needs) + "/month):");
+                n1.setStyle("-fx-font-weight: bold; -fx-text-fill: #f1f5f9;");
+                Label n2 = new Label("    └ Rent & Housing: " + UIContext.formatMoney(needs.multiply(new BigDecimal("0.50")))
+                        + " | Groceries & Food: " + UIContext.formatMoney(needs.multiply(new BigDecimal("0.25")))
+                        + " | Utilities & Health: " + UIContext.formatMoney(needs.multiply(new BigDecimal("0.25"))));
+                n2.setStyle("-fx-text-fill: #94a3b8;");
+
+                Label w1 = new Label("• 30% Lifestyle & Personal Wants (" + UIContext.formatMoney(wants) + "/month):");
+                w1.setStyle("-fx-font-weight: bold; -fx-text-fill: #f1f5f9;");
+                Label w2 = new Label("    └ Dining out, weekend entertainment, gadgets, leisure travel, and OTT subscriptions.");
+                w2.setStyle("-fx-text-fill: #94a3b8;");
+
+                Label s1 = new Label("• 20% Mandatory Savings & Investments (" + UIContext.formatMoney(savings) + "/month):");
+                s1.setStyle("-fx-font-weight: bold; -fx-text-fill: #34d399;");
+                Label s2 = new Label("    Where to invest your " + UIContext.formatMoney(savings) + " monthly contribution:");
+                s2.setStyle("-fx-text-fill: #cbd5e1;");
+                Label s3 = new Label("    1. 60% in Broad Market Index ETF (NIFTYBEES): " + UIContext.formatMoney(etfInv) + " (Safe long-term compounding)");
+                s3.setStyle("-fx-text-fill: #38bdf8;");
+                Label s4 = new Label("    2. 25% in Bluechip Equities (TCS, Reliance): " + UIContext.formatMoney(stockInv) + " (High-growth capital expansion)");
+                s4.setStyle("-fx-text-fill: #a78bfa;");
+                Label s5 = new Label("    3. 15% in Sovereign Gold Bonds / Debt: " + UIContext.formatMoney(bondInv) + " (Capital preservation cushion)");
+                s5.setStyle("-fx-text-fill: #fbbf24;");
+
+                salaryPlanResultBox.getChildren().addAll(planTitle, n1, n2, w1, w2, s1, s2, s3, s4, s5);
+            } else {
+                BigDecimal living = salary.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal invest = salary.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal debt = salary.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal accelerated = salary.multiply(new BigDecimal("0.30")).setScale(2, RoundingMode.HALF_UP);
+
+                Label planTitle = new Label("📋 70/15/15 Financial Framework Plan for Monthly Salary of " + UIContext.formatMoney(salary) + ":");
+                planTitle.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
+
+                Label l1 = new Label("• 70% Living Expenses (" + UIContext.formatMoney(living) + "/month):");
+                l1.setStyle("-fx-font-weight: bold; -fx-text-fill: #f1f5f9;");
+                Label l2 = new Label("    └ Covers all everyday essentials, rent, food, bills, and lifestyle desires combined.");
+                l2.setStyle("-fx-text-fill: #94a3b8;");
+
+                Label i1 = new Label("• 15% Core Wealth Investments (" + UIContext.formatMoney(invest) + "/month):");
+                i1.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+                Label i2 = new Label("    └ Invested every month into Index ETFs (Nifty 50) and bluechip stocks for compounding.");
+                l2.setStyle("-fx-text-fill: #94a3b8;");
+
+                Label d1 = new Label("• 15% Debt Clearance & Emergency Fund (" + UIContext.formatMoney(debt) + "/month):");
+                d1.setStyle("-fx-font-weight: bold; -fx-text-fill: #fbbf24;");
+                Label d2 = new Label("    └ Aggressively attacks outstanding credit card or personal debt until zero balance.");
+                d2.setStyle("-fx-text-fill: #94a3b8;");
+
+                Label acc = new Label("⚡ POST-DEBT ACCELERATION: Once your loans are paid off, the 15% debt budget joins investing,\n"
+                        + "   accelerating your monthly investment rate to a massive 30% (" + UIContext.formatMoney(accelerated) + "/month)!");
+                acc.setStyle("-fx-background-color: #131c2e; -fx-padding: 8px 12px; -fx-background-radius: 6px; -fx-text-fill: #34d399; -fx-font-weight: bold;");
+
+                salaryPlanResultBox.getChildren().addAll(planTitle, l1, l2, i1, i2, d1, d2, acc);
+            }
+        } catch (Exception ex) {
+            salaryPlanResultBox.getChildren().clear();
+            salaryPlanResultBox.getChildren().add(new Label("Please enter a valid numeric salary."));
+        }
+    }
+
+    /**
+     * Module 2: Interactive Advisor Q&A Terminal
+     * Answers ANY financial question typed by the user or chosen from quick chips.
+     */
+    private void buildInteractiveAdvisorChatSection() {
+        VBox card = new VBox(14);
+        card.getStyleClass().add("content-card");
+        card.setPadding(new Insets(20));
+
+        Label title = new Label("Interactive Financial Advisor Assistant (Q&A)");
+        title.getStyleClass().add("section-title");
+
+        Label sub = new Label("Ask any question regarding investments, budgeting rules, debt payoff, or loans. The advisor evaluates your real balance sheet to give customized advice.");
+        sub.getStyleClass().add("card-subtitle");
+
+        // Quick prompt chips
+        HBox chips = new HBox(8);
+        chips.setAlignment(Pos.CENTER_LEFT);
+        String[] sampleQuestions = {
+                "How to invest ₹50k salary?",
+                "50/30/20 vs 70/15/15?",
+                "How to clear debt faster?",
+                "What is SIP compounding?",
+                "Can I take a loan on my stocks?",
+                "How much emergency fund?"
+        };
+
+        for (String q : sampleQuestions) {
+            Button chip = new Button(q);
+            chip.getStyleClass().addAll("btn-sm", "btn-outline");
+            chip.setOnAction(e -> {
+                questionInput.setText(q);
+                handleAskQuestion();
+            });
+            chips.getChildren().add(chip);
+        }
+
+        // Conversation history
+        chatConversationArea = new TextArea();
+        chatConversationArea.setEditable(false);
+        chatConversationArea.setWrapText(true);
+        chatConversationArea.setPrefHeight(180);
+        chatConversationArea.setText("Advisor: Hello! I am your personal financial planning advisor. Ask me anything about budgeting your salary, choosing between stocks and ETFs, calculating loan EMIs, or managing portfolio risk!");
+        chatConversationArea.setStyle("-fx-control-inner-background: #0b1120; -fx-text-fill: #e2e8f0; -fx-font-family: monospace; -fx-font-size: 13px;");
+
+        // Input row
+        HBox inputRow = new HBox(12);
+        inputRow.setAlignment(Pos.CENTER_LEFT);
+
+        questionInput = new TextField();
+        questionInput.setPromptText("Type your financial or investment question here...");
+        HBox.setHgrow(questionInput, Priority.ALWAYS);
+        questionInput.setOnAction(e -> handleAskQuestion());
+
+        Button askBtn = new Button("💬 Ask Advisor");
+        askBtn.getStyleClass().addAll("btn", "btn-primary");
+        askBtn.setOnAction(e -> handleAskQuestion());
+
+        inputRow.getChildren().addAll(questionInput, askBtn);
+
+        card.getChildren().addAll(title, sub, chips, chatConversationArea, inputRow);
+        container.getChildren().add(card);
+    }
+
+    private void handleAskQuestion() {
+        String q = questionInput.getText().trim();
+        if (q.isEmpty()) return;
+
+        Trader trader = context.getTrader();
+        FinancialProfile profile = context.getAdvisorService().getProfile(trader.getUserId());
+        String answer = generateSmartAnswer(q, trader, profile);
+
+        chatConversationArea.appendText("\n\nYou: " + q);
+        chatConversationArea.appendText("\nAdvisor: " + answer);
+        chatConversationArea.appendText("\n" + "─".repeat(70));
+        questionInput.clear();
+    }
+
+    private String generateSmartAnswer(String query, Trader trader, FinancialProfile profile) {
+        String q = query.toLowerCase();
+
+        if (q.contains("salary") || q.contains("invest") && (q.contains("50") || q.contains("60") || q.contains("how to invest"))) {
+            return "Based on your current salary profile of " + UIContext.formatMoney(profile.getMonthlyIncome()) + "/month:\n"
+                    + "1. Ensure 50% covers essential needs (rent, groceries, electricity).\n"
+                    + "2. Cap lifestyle wants to 30%.\n"
+                    + "3. Invest the remaining 20% systematically:\n"
+                    + "   • Deploy 60% into Nifty 50 Index ETFs (NIFTYBEES) for market return.\n"
+                    + "   • Deploy 25% into large-cap bluechips (TCS, Reliance) for capital appreciation.\n"
+                    + "   • Deploy 15% into Sovereign Gold Bonds for risk mitigation.\n"
+                    + "You currently have " + UIContext.formatMoney(trader.getCashBalance()) + " in liquid cash ready to invest!";
+        }
+
+        if (q.contains("50/30/20") || q.contains("70/15/15") || q.contains("rule") || q.contains("which")) {
+            return "Both rules are excellent but serve different stages:\n"
+                    + "• Choose 50/30/20 if you have ZERO or low debt and want a clear balance between daily fun (30% wants) and future investing (20%).\n"
+                    + "• Choose 70/15/15 if you have existing liabilities (e.g. your active debt of ₹" + profile.getExistingDebt().toPlainString() + "). "
+                    + "It allocates 15% strictly for debt clearance and once loans are paid off, automatically expands to 30% investing!";
+        }
+
+        if (q.contains("debt") || q.contains("loan") || q.contains("clear")) {
+            if (profile.getExistingDebt().signum() > 0) {
+                return "You currently have ₹" + profile.getExistingDebt().toPlainString() + " in outstanding debt.\n"
+                        + "Strategy: Use the 'Debt Avalanche' or 70/15/15 rule. Pay " + UIContext.formatMoney(profile.getRecommendedDebtOrEmergencyFifteen())
+                        + " every month towards your loan. Clearing debt guarantees a risk-free return equivalent to your interest rate!";
+            } else {
+                return "You are completely debt-free! That gives you maximum financial leverage to invest up to 30% of your income into compounding equity assets.";
+            }
+        }
+
+        if (q.contains("sip") || q.contains("compound")) {
+            return "A Systematic Investment Plan (SIP) uses rupee-cost averaging: you buy more shares when prices fall, and fewer when prices rise.\n"
+                    + "Compounding Formula: FV = P × [((1 + r)^n - 1) / r] × (1 + r).\n"
+                    + "Investing ₹5,000/month at 12% CAGR for 15 years results in ₹25.2 Lakhs on an investment of just ₹9 Lakhs!";
+        }
+
+        if (q.contains("emergency") || q.contains("buffer")) {
+            BigDecimal months = profile.getEmergencyFundMonthsCovered();
+            return "An emergency buffer must cover 3 to 6 months of mandatory living expenses (" + UIContext.formatMoney(profile.getMonthlyExpenses()) + "/month).\n"
+                    + "Your target buffer is " + UIContext.formatMoney(profile.getMonthlyExpenses().multiply(new BigDecimal("6"))) + ".\n"
+                    + "You currently have " + months + " months of living expenses covered in liquid cash.";
+        }
+
+        if (q.contains("loan on stock") || q.contains("las") || q.contains("pledge")) {
+            return "Yes! You can take a Loan Against Securities (LAS) by pledging your stocks up to 50% Loan-to-Value (LTV) at approximately 9.5% interest p.a.\n"
+                    + "This provides instant liquidity without triggering capital gains taxes or losing dividends. Check our dedicated 'Loans' tab!";
+        }
+
+        if (q.contains("pe ratio") || q.contains("market cap") || q.contains("fundamentals")) {
+            return "Key financial fundamentals:\n"
+                    + "• Market Cap = Share Price × Total Outstanding Shares (indicates company size).\n"
+                    + "• P/E Ratio = Price per share / Earnings per share (indicates how much you pay for ₹1 of profit).\n"
+                    + "• Book Value = Net asset value of the company per share.\n"
+                    + "You can inspect all these live under the 'Explore' tab for any selected stock!";
+        }
+
+        // Generic financial wisdom response
+        return "Financial discipline begins with paying yourself first! Keep at least 20% of your salary invested every month across diversified assets, sustain a 6-month emergency buffer, and avoid taking high-interest personal loans. Let me know if you need specific calculations!";
     }
 
     private void buildAllocationBenchmarkingSection() {
@@ -298,11 +456,11 @@ public class FinancialAdvisorView extends ScrollPane {
         card.getStyleClass().add("content-card");
         card.setPadding(new Insets(20));
 
-        Label title = new Label("Actionable Advisory Recommendations & Audit Log");
+        Label title = new Label("Actionable Advisory Recommendations & Audit Findings");
         title.getStyleClass().add("section-title");
 
         recTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        recTable.setPrefHeight(320);
+        recTable.setPrefHeight(280);
 
         TableColumn<AdvisorRecommendation, String> catCol = new TableColumn<>("Category");
         catCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getCategory().getDisplayName()));
@@ -321,24 +479,20 @@ public class FinancialAdvisorView extends ScrollPane {
         statusCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getStatus().name()));
         statusCol.setPrefWidth(90);
 
-        // Action Column for updating recommendation status
         TableColumn<AdvisorRecommendation, Void> actionCol = new TableColumn<>("Manage Status");
-        actionCol.setPrefWidth(200);
+        actionCol.setPrefWidth(180);
         actionCol.setCellFactory(col -> new TableCell<>() {
-            private final Button reviewBtn = new Button("Review");
             private final Button acceptBtn = new Button("Accept");
             private final Button completeBtn = new Button("Done");
             private final Button dismissBtn = new Button("✕");
-            private final HBox btnBox = new HBox(6, reviewBtn, acceptBtn, completeBtn, dismissBtn);
+            private final HBox btnBox = new HBox(6, acceptBtn, completeBtn, dismissBtn);
 
             {
-                reviewBtn.getStyleClass().addAll("btn-sm", "btn-outline");
                 acceptBtn.getStyleClass().addAll("btn-sm", "btn-secondary");
                 completeBtn.getStyleClass().addAll("btn-sm", "btn-primary");
                 dismissBtn.getStyleClass().addAll("btn-sm", "btn-danger");
                 btnBox.setAlignment(Pos.CENTER);
 
-                reviewBtn.setOnAction(e -> updateStatus(RecommendationStatus.REVIEWED));
                 acceptBtn.setOnAction(e -> updateStatus(RecommendationStatus.ACCEPTED));
                 completeBtn.setOnAction(e -> updateStatus(RecommendationStatus.COMPLETED));
                 dismissBtn.setOnAction(e -> updateStatus(RecommendationStatus.DISMISSED));
@@ -376,38 +530,6 @@ public class FinancialAdvisorView extends ScrollPane {
         dtiLabel.setText(UIContext.formatPercent(profile.getDebtToIncomeRatio()));
         riskPrefLabel.setText(profile.getRiskPreference().name());
 
-        // 50/30/20 values
-        needsFiftyLabel.setText(UIContext.formatMoney(profile.getRecommendedNeedsFifty()));
-        wantsThirtyLabel.setText(UIContext.formatMoney(profile.getRecommendedWantsThirty()));
-        savingsTwentyLabel.setText(UIContext.formatMoney(profile.getRecommendedSavingsTwenty()));
-
-        BigDecimal surplus = profile.getMonthlySurplus();
-        BigDecimal targetSavings20 = profile.getRecommendedSavingsTwenty();
-        if (surplus.compareTo(targetSavings20) >= 0) {
-            fiftySummaryLabel.setText("✅ Excellent! Your current monthly surplus of " + UIContext.formatMoney(surplus)
-                    + " meets or exceeds the 20% savings target (" + UIContext.formatMoney(targetSavings20) + ").");
-        } else {
-            fiftySummaryLabel.setText("⚠️ Gap Detected: Your surplus is " + UIContext.formatMoney(surplus)
-                    + ", which is below the recommended 20% savings target of " + UIContext.formatMoney(targetSavings20)
-                    + ". Check if wants or non-essential expenses can be optimized.");
-        }
-
-        // 70/15/15 values
-        livingSeventyLabel.setText(UIContext.formatMoney(profile.getRecommendedLivingExpensesSeventy()));
-        investingFifteenLabel.setText(UIContext.formatMoney(profile.getRecommendedInvestingFifteen()));
-        debtFifteenLabel.setText(UIContext.formatMoney(profile.getRecommendedDebtOrEmergencyFifteen()));
-        postDebtThirtyLabel.setText(UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()));
-
-        if (profile.getExistingDebt().signum() > 0) {
-            seventySummaryLabel.setText("⚡ Active Debt (₹" + profile.getExistingDebt().toPlainString() + "): Allocate "
-                    + UIContext.formatMoney(profile.getRecommendedDebtOrEmergencyFifteen())
-                    + " (15%) every month towards accelerating debt elimination while sustaining 15% in investments. Once cleared, shift full 30% ("
-                    + UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()) + ") into investments!");
-        } else {
-            seventySummaryLabel.setText("🎉 Zero Debt Status: You are debt-free! You can deploy the full accelerated 30% ("
-                    + UIContext.formatMoney(profile.getAcceleratedPostDebtInvestingThirty()) + ") monthly into long-term investing!");
-        }
-
         // Allocation comparison
         Map<AssetCategory, BigDecimal> actual = trader.getPortfolio().getAllocationByCategory();
         Map<AssetCategory, BigDecimal> target = context.getAdvisorService().getTargetAllocation(profile.getRiskPreference());
@@ -438,10 +560,9 @@ public class FinancialAdvisorView extends ScrollPane {
         refreshAdvisor();
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Advisor Evaluation Finished");
-        alert.setHeaderText("AI Financial Advisor Execution Complete");
-        alert.setContentText("Analyzed portfolio and profile against financial safety rules.\n"
-                + "Total active recommendations: " + recs.size());
+        alert.setTitle("Portfolio Audit Complete");
+        alert.setHeaderText("Financial Advisory Rules Executed");
+        alert.setContentText("Evaluated portfolio diversification, concentration, cash drag, and budgeting frameworks.\nTotal active recommendations: " + recs.size());
         alert.showAndWait();
     }
 
@@ -450,8 +571,8 @@ public class FinancialAdvisorView extends ScrollPane {
         FinancialProfile profile = context.getAdvisorService().getProfile(trader.getUserId());
 
         Dialog<FinancialProfile> dialog = new Dialog<>();
-        dialog.setTitle("Edit Personal Financial Profile");
-        dialog.setHeaderText("Update your monthly cashflow, liabilities, and risk tolerance.");
+        dialog.setTitle("Edit Financial Profile");
+        dialog.setHeaderText("Update monthly income, expenses, liabilities, and risk tolerance.");
 
         GridPane gp = new GridPane();
         gp.setHgap(12);
@@ -469,20 +590,17 @@ public class FinancialAdvisorView extends ScrollPane {
 
         gp.add(new Label("Risk Preference:"), 0, 0);
         gp.add(riskCombo, 1, 0);
-        gp.add(new Label("Monthly Gross Income (INR):"), 0, 1);
+        gp.add(new Label("Monthly Net Salary (INR):"), 0, 1);
         gp.add(incomeField, 1, 1);
         gp.add(new Label("Monthly Living Expenses (INR):"), 0, 2);
         gp.add(expensesField, 1, 2);
-        gp.add(new Label("Available Liquid Savings (INR):"), 0, 3);
+        gp.add(new Label("Liquid Cash Reserves (INR):"), 0, 3);
         gp.add(savingsField, 1, 3);
         gp.add(new Label("Total Outstanding Debt (INR):"), 0, 4);
         gp.add(debtField, 1, 4);
 
         dialog.getDialogPane().setContent(gp);
-        dialog.getDialogPane().getButtonTypes().addAll(
-                javafx.scene.control.ButtonType.OK,
-                javafx.scene.control.ButtonType.CANCEL
-        );
+        dialog.getDialogPane().getButtonTypes().addAll(javafx.scene.control.ButtonType.OK, javafx.scene.control.ButtonType.CANCEL);
 
         dialog.setResultConverter(btn -> {
             if (btn == javafx.scene.control.ButtonType.OK) {
@@ -493,6 +611,8 @@ public class FinancialAdvisorView extends ScrollPane {
                     profile.setAvailableSavings(new BigDecimal(savingsField.getText().trim()));
                     profile.setExistingDebt(new BigDecimal(debtField.getText().trim()));
                     context.getAdvisorService().saveProfile(profile);
+                    salaryInputField.setText(profile.getMonthlyIncome().toPlainString());
+                    generateSalaryPlan();
                     refreshAdvisor();
                 } catch (Exception ex) {
                     Alert a = new Alert(Alert.AlertType.ERROR, "Invalid numbers entered: " + ex.getMessage());

@@ -34,6 +34,14 @@ public class CsvExportService {
         return dir;
     }
 
+    public Path exportTransactions(List<Transaction> transactions) throws IOException {
+        return exportTransactions(transactions, null);
+    }
+
+    public Path exportHoldings(List<Position> positions) throws IOException {
+        return exportHoldings(positions, null);
+    }
+
     /**
      * Exports transaction history to a CSV file.
      * Columns: Transaction ID, Timestamp, Type, Asset Symbol, Asset Name, Quantity, Price, Fee, Gross Value, Net Amount, Status
@@ -112,7 +120,7 @@ public class CsvExportService {
             writer.write("Trader ID," + trader.getUserId() + "\n");
             writer.write("Trader Name," + escapeCsv(trader.getName()) + "\n");
             writer.write("Report Generated," + LocalDateTime.now().toString() + "\n");
-            writer.write("Virtual Cash Balance," + trader.getCashBalance().toPlainString() + "\n");
+            writer.write("Available Cash Balance," + trader.getCashBalance().toPlainString() + "\n");
             writer.write("Total Cost Basis of Open Holdings," + summary.totalCostBasis().toPlainString() + "\n");
             writer.write("Total Market Value of Open Holdings," + summary.holdingsValue().toPlainString() + "\n");
             writer.write("Total Account Value (Cash + Holdings)," + trader.getTotalAccountValue().toPlainString() + "\n");

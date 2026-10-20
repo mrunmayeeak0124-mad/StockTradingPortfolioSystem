@@ -1,5 +1,5 @@
 # InvestIQ: Stock Trading & Portfolio Management System
-> **A Virtual Investment Simulator with an Educational Financial Advisor**  
+> **An Investment Simulator with an Educational Financial Advisor**  
 > *Second-Year B.Tech Information Technology — Object-Oriented Programming (OOP) Mini-Project*
 
 ---
@@ -14,14 +14,14 @@ Here is a live look at the modern fintech interface of **InvestIQ**:
 
 ## 📌 1. Project Overview & Objective
 
-The **Stock Trading & Portfolio Management System (InvestIQ)** is a complete, professional desktop application developed in **Java 21** using **JavaFX**, **SQLite (JDBC)**, and **Maven**. It provides an authentic financial simulation environment where users can learn how financial markets operate, practice active stock trading and portfolio management using **virtual currency**, understand risk diversification, and receive rule-based educational advisory insights.
+The **Stock Trading & Portfolio Management System (InvestIQ)** is a complete, professional desktop application developed in **Java 21** using **JavaFX**, **SQLite (JDBC)**, and **Maven**. It provides an authentic financial simulation environment where users can learn how financial markets operate, practice active stock trading and portfolio management, understand risk diversification, and receive rule-based educational advisory insights.
 
 ### Core Objectives
-1. **Zero Financial Risk:** Operates strictly with virtual currency (starts with ₹1,00,000.00 mock balance). No real bank credentials, brokerage accounts, or real money are ever used.
+1. **Zero Financial Risk:** Operates strictly in an educational simulation environment (starts with ₹1,00,000.00 initial balance). No real bank credentials, brokerage accounts, or real money are ever used.
 2. **Pedagogical Integrity:** Designed from the ground up to demonstrate every foundational Object-Oriented Programming (OOP) concept with clean architectural separation.
 3. **Institutional Precision:** All monetary amounts, transaction fees, and calculations use `java.math.BigDecimal` with `HALF_UP` rounding to prevent binary floating-point inaccuracies.
-4. **Holistic Wealth Planning:** Goes beyond simple stock trading by incorporating ETF/Bond asset classes, goal tracking (retirement, education), EMI home loan planning, and automated portfolio rebalancing checks.
-5. **Real-Time Multithreading:** Features a background market ticker thread updating simulated quotes at fixed intervals and asynchronous worker threads for non-blocking file handling.
+4. **Holistic Wealth Planning:** Combines active multi-asset trading (Stocks, ETFs, Sovereign Bonds) with systematic wealth-building tools (SIP calculator, compounding lumpsum, currency exchange), interactive salary budgeting, loans (loan against stocks/mutual funds, home mortgages, personal loan debt affordability), and milestone goal planning.
+5. **Real-Time Multithreading:** Features a background market ticker thread updating simulated quotes with Brownian drift at fixed intervals and asynchronous worker threads for non-blocking file handling.
 
 ---
 
@@ -30,10 +30,10 @@ The **Stock Trading & Portfolio Management System (InvestIQ)** is a complete, pr
 | Layer | Technology | Details |
 | :--- | :--- | :--- |
 | **Language** | Java 21 (LTS) | Modern Java records, pattern matching, switch expressions, streams |
-| **GUI Framework** | JavaFX 21 (OpenJFX) | JavaFX Controls, Charts (Line, Pie), CSS-based modern dark theme |
+| **GUI Framework** | JavaFX 21 (OpenJFX) | JavaFX Controls, Charts (LineChart, PieChart), CSS-based modern dark theme |
 | **Build Tool** | Apache Maven 3.9+ | Automated dependency resolution and lifecycle management |
 | **Database** | SQLite 3 via JDBC | Local transactional persistence with ACID compliance (`stocktrading.db`) |
-| **Testing** | JUnit 5 (Jupiter) | 44 unit tests validating core math, trading rules, and persistence |
+| **Testing** | JUnit 5 (Jupiter) | 46 unit tests validating core math, trading rules, and persistence |
 | **IDE** | IntelliJ IDEA | Fully configured and ready to open as an existing Maven project |
 
 ---
@@ -55,9 +55,9 @@ com.stockportfolio
 ```
 
 ### Applied Design Patterns
-- **Repository Pattern:** Separates database access code (`AssetRepository`, `TransactionRepository`, `TraderRepository`) from business logic.
+- **Repository Pattern:** Separates database access code (`AssetRepository`, `TransactionRepository`, `TraderRepository`, `FinancialGoalRepository`) from business logic.
 - **Strategy / Provider Pattern:** `MarketDataProvider` interface allows seamless swapping between `MockMarketDataProvider` and real live REST API market providers.
-- **Observer Pattern:** `UIContext` maintains dynamic data listeners (`notifyDataChanged()`) so that any trade, price refresh, or deposit automatically updates dashboard counters and charts across all tabs.
+- **Observer Pattern:** `UIContext` maintains dynamic data listeners (`notifyDataChanged()`) so that any trade, price refresh, or deposit automatically updates dashboard counters, tables, and charts across all views.
 - **Model-View-Controller (MVC) Separation:** JavaFX views handle presentation and user input, delegating all validation and calculations to the service layer.
 
 ---
@@ -69,56 +69,75 @@ com.stockportfolio
 | **Encapsulation** | Private fields, validation invariants, immutable collections, `BigDecimal` scale control. | [`Position`](src/main/java/com/stockportfolio/model/Position.java), [`Trader`](src/main/java/com/stockportfolio/model/Trader.java), [`FinancialProfile`](src/main/java/com/stockportfolio/model/FinancialProfile.java) |
 | **Inheritance** | Base asset hierarchy (`Stock`, `ETF`, `Bond` extending `Asset`) and order hierarchy (`BuyOrder`, `SellOrder` extending `Order`). | [`Asset.java`](src/main/java/com/stockportfolio/model/Asset.java), [`Order.java`](src/main/java/com/stockportfolio/model/Order.java) |
 | **Abstraction** | Interfaces decoupling data sources and contracts from concrete implementations. | [`MarketDataProvider`](src/main/java/com/stockportfolio/provider/MarketDataProvider.java), [`ExchangeRateProvider`](src/main/java/com/stockportfolio/provider/ExchangeRateProvider.java) |
-| **Polymorphism** | Dynamic dispatch of abstract methods (`getDetails()`, `validateBeforeExecution()`). | [`Stock.getDetails()`](src/main/java/com/stockportfolio/model/Stock.java), [`Bond.getDetails()`](src/main/java/com/stockportfolio/model/Bond.java) |
-| **Multithreading** | Background daemon thread running scheduled price simulation (`ScheduledExecutorService`) and JavaFX `Platform.runLater` UI synchronization; asynchronous worker threads for non-blocking file exports. | [`MarketSimulationScheduler.java`](src/main/java/com/stockportfolio/service/MarketSimulationScheduler.java), [`DataExportView.java`](src/main/java/com/stockportfolio/ui/DataExportView.java) |
+| **Polymorphism** | Dynamic dispatch of abstract methods (`getDetails()`, `execute()`, `canExecuteAt()`). | [`Stock.getDetails()`](src/main/java/com/stockportfolio/model/Stock.java), [`BuyOrder.execute()`](src/main/java/com/stockportfolio/model/BuyOrder.java) |
+| **Multithreading** | Background daemon thread running scheduled price simulation (`ScheduledExecutorService`) and JavaFX `Platform.runLater` UI synchronization; asynchronous worker threads for non-blocking file exports. | [`MarketSimulationScheduler.java`](src/main/java/com/stockportfolio/service/MarketSimulationScheduler.java), [`ToolsView.java`](src/main/java/com/stockportfolio/ui/ToolsView.java) |
 | **File Handling** | Generating structured CSV files using Java NIO (`Files`, `Path`, `BufferedWriter`) for transactions, holdings, and portfolio summaries. | [`CsvExportService.java`](src/main/java/com/stockportfolio/service/CsvExportService.java) |
 | **Collections** | Strategic usage of `Map<String, Position>` for O(1) lookups, `Set<String>` for unique watchlists, and `List<Transaction>` for audit logs. | [`Portfolio.java`](src/main/java/com/stockportfolio/model/Portfolio.java), [`Watchlist.java`](src/main/java/com/stockportfolio/model/Watchlist.java) |
 | **Exception Handling** | Custom checked and unchecked exception hierarchy with clean propagation. | [`TradingException`](src/main/java/com/stockportfolio/exception/TradingException.java), [`InsufficientFundsException`](src/main/java/com/stockportfolio/exception/InsufficientFundsException.java) |
 
 ---
 
-## 📱 5. Application Modules (14 Comprehensive Views)
+## 📱 5. Core Application Sections
 
-1. **Dashboard:** Real-time net worth cards (Cash, Holdings, Total Account Value), portfolio asset allocation pie chart, recent trade activity table, and quick navigation.
-2. **Market Explorer:** Search and filter 10+ simulated assets (Stocks, ETFs, Sovereign Bonds), real-time simulated quote prices, and 1-click watchlist toggling.
-3. **Asset Details:** Interactive historical price chart (`LineChart`), high/low metrics, and 7-day / 14-day Simple Moving Average (SMA) technical indicators.
-4. **Trading Terminal:** Order placement screen supporting **Market** and **Limit** orders for both **Buy** and **Sell** sides, real-time fee calculation (0.10%), and atomic execution checks.
-5. **Order Book:** Full audit table of all placed orders with real-time status (`PENDING`, `EXECUTED`, `CANCELLED`, `REJECTED`) and cancel order capability.
-6. **Portfolio Holdings:** Real-time monitoring of all open positions: average cost basis, current market price, unrealized P/L, percentage return, and diversification score.
-7. **Virtual Wallet:** Safe virtual deposit terminal (1-click preset buttons: ₹10,000, ₹50,000, ₹1,00,000) with complete deposit audit trail.
-8. **Transaction History:** Immutable historical ledger of every BUY, SELL, and DEPOSIT event with date filtering and full transaction details.
-9. **Market Insights & FX:** Comparative multi-asset price performance chart and simulated currency converter supporting INR, USD, EUR, and GBP.
-10. **Educational Financial Advisor:** Rule-based diagnostic engine checking emergency fund health (< 3 months buffer), debt-to-income (DTI > 35%), single-stock concentration (> 25%), and target asset allocation drift, coupled with interactive **50/30/20 Budgeting** (Needs vs. Wants vs. Savings) and **70/15/15 Financial Framework** (Living vs. Investing vs. Debt Buffer with 30% post-debt acceleration).
-11. **Financial Goal Planner:** Goal creation and tracking with monthly required savings calculation, compounding future value forecasting, and progress bars.
-12. **Home Purchase & Loan Planner:** Comprehensive mortgage EMI calculator, amortization summary, upfront cash requirement check (down payment + stamp duty + legal), and LTV limits.
-13. **Education Center:** Searchable financial literacy dictionary covering 16 key investment terms (P/E Ratio, Compounding, 50/30/20 Rule, 70/15/15 Framework, Diversification, LTV, EMI, etc.).
-14. **Data Export & Reporting:** Instant CSV report generator exporting `transactions.csv`, `portfolio_holdings.csv`, and `performance_summary.csv` to the local `exports/` folder asynchronously.
+The user interface is organized into **5 streamlined sections** plus a dedicated **Profile & Wallet** view:
+
+### 1. 🔍 Explore (Market Discovery, Fundamentals & Trading)
+- **Market Discovery:** Filter assets by category (All, Stocks, ETFs, Bonds) or instant search by symbol/name, complete with 1-click watchlist bookmarking.
+- **Institutional Stock Fundamentals:** Comprehensive corporate fundamentals card displaying **Market Capitalization**, **1-Year ROI**, **Book Value**, **24h Volume**, **P/E Ratio**, and **52-Week High/Low Range**.
+- **Multi-Timeframe Charts (`1D`, `1W`, `1M`, `3M`, `6M`, `1Y`, `5Y`, `ALL`):**
+  - `1D` Timeframe: Intraday jagged curve with morning spikes, pullbacks, and sharp fluctuations.
+  - `ALL` Timeframe: Multi-year exponential compound growth curve reflecting historical bull markets and cycle corrections.
+- **Unified Trading Terminal:** Seamless Buy and Sell execution for Market orders (instant execution) and Limit orders (trigger price monitoring) with automatic 0.10% fee calculation and cash validation.
+
+### 2. 📊 Dashboard (Portfolio Valuation, Holdings & Order Book)
+- **Net Worth Metrics:** Real-time summary cards displaying Cash Balance, Open Holdings Value, Total Net Worth, Realized P/L, and Unrealized P/L.
+- **Holdings Table:** Live table of all open investment positions: Asset, Category, Quantity Held, Average Buy Price, Current Market Price, Invested Cost, Current Market Value, and Unrealized Return % (with 1-click Sell action).
+- **Order Book & Execution Log:** Comprehensive order management table displaying Order ID, Asset, Side (BUY/SELL), Type (MARKET/LIMIT), Qty, Trigger Price, Status (`PENDING`, `EXECUTED`, `CANCELLED`, `REJECTED`), and timestamp, with 1-click instant order cancellation for pending limit orders.
+- **Asset Allocation Breakdown:** Interactive JavaFX `PieChart` showing percentage exposure across Equities, Index Funds, Bonds, and Cash Reserves.
+
+### 3. 🧠 Advisor (Interactive Financial Advisor & Salary Budgeting)
+- **Salary & Cashflow Budgeting Allocator:** Directly answers *"In my salary of ₹X, how much should I spend and where should I invest?"*:
+  - **50/30/20 Rule:** Itemized rupee breakdown for Needs (Rent, Utilities, Food), Wants (Lifestyle, Travel), and Investments (Mutual Funds, Equities).
+  - **70/15/15 Rule:** Itemized rupee breakdown for Living Expenses, Core Investing, and Debt Buffer / Emergency Reserve (accelerates to 30% investing once debt is cleared).
+  - **Itemized Investment Recommendations:** Specific rupee allocation across Blue-Chip Equities (40%), Broad Market Index ETFs (30%), and Fixed-Income Sovereign Bonds (30%).
+- **Interactive Advisor Q&A Assistant:** Chat interface that provides actionable answers to any personal finance, investment, compounding, loan, or risk diversification query.
+- **Rule-Based Diagnostic Health Audit:** 8 automated health checks evaluating emergency fund coverage, single-asset concentration risk (> 25%), debt-to-income ratio, and asset allocation drift.
+
+### 4. 🧮 Tools (Calculators, Currency Converter & Export)
+- **SIP Calculator:** Calculates future wealth accumulation through Systematic Investment Plans (SIP) given monthly investment, expected annual return %, and tenure in years, visualizing total invested capital vs. compound wealth gain.
+- **Lumpsum Compounding Calculator:** Forecasts one-time lump-sum investment growth across 1 to 30 years using compound interest formulas.
+- **Foreign Exchange (FX) Converter:** Real-time multi-currency calculator converting between INR, USD, EUR, and GBP with transparent exchange rate display.
+- **Financial Milestone Goals Tracker:** Define and monitor personal milestones (Emergency Fund, Higher Education, Home Down Payment, Retirement) with target deadlines and required monthly contributions.
+- **Asynchronous CSV Export Engine:** Non-blocking file exporter generating `portfolio_holdings.csv` and `transactions.csv` in the background without UI lag.
+
+### 5. 🏦 Loans (Borrowing, Pledges & Debt Affordability)
+- **Loan against Stocks & Securities (LAS):** Instant credit line evaluated at 50% Loan-to-Value (LTV) pledged against the trader's actual portfolio holdings without having to liquidate positions.
+- **Loan against Mutual Funds & ETFs:** Low-interest liquidity line against index fund holdings with transparent interest rates and repayment flexibilities.
+- **Home Mortgage Loan & EMI Planner:** Simulates property purchase by calculating monthly EMIs, total interest outlay, and upfront cash requirements (Down payment + 7% Stamp Duty & Registration).
+- **Personal Loan & Salary Affordability Planner:** Evaluates unsecured debt installments against trader's net monthly income and computes FOIR (Fixed Obligation to Income Ratio) to alert against excessive debt burdens (> 40%).
+
+### 👤 Profile & Wallet (Dedicated Account Management)
+- **Trader Profile:** Personal details, account identifier, and configurable monthly salary and risk profile (Conservative, Moderate, Aggressive).
+- **Wallet & Cash Deposits:** Real-time cash balance display with 1-click quick deposit presets (+₹10k, +₹25k, +₹50k, +₹1,00,000) or custom deposit amounts.
+- **Deposit Audit History:** Transparent chronological log of all deposit transactions.
 
 ---
 
-## ⭐ 6. Top 5+ Unique Features of InvestIQ
+## ⭐ 6. Top Unique Features of InvestIQ
 
-Unlike basic trading calculators or static portfolio loggers, **InvestIQ** integrates 6 sophisticated features that distinguish it as an institutional-grade educational simulator:
-
-1. **Multithreaded Real-Time Market Ticker & Autonomous Limit Order Triggering:**  
-   A background daemon thread (`MarketSimulationScheduler`) dynamically updates asset quotes with realistic Brownian drift every 5 seconds. When quotes fluctuate, pending limit orders are evaluated and executed atomically without freezing the JavaFX user interface.
-2. **Dual Personal Finance Budgeting Engine (50/30/20 & 70/15/15 Rules):**  
-   Provides real-time mathematical breakdown comparing the trader's actual cash surplus against the standard **50% Needs / 30% Wants / 20% Savings** model and the **70% Living / 15% Investing / 15% Debt-Emergency** framework (which unlocks an accelerated 30% investing rate upon clearing debt).
-3. **Comprehensive Home Purchase & Mortgage Feasibility Planner:**  
-   Simulates real-world home buying by calculating monthly EMIs across tenures, breaking down principal vs. interest amortization, and enforcing upfront liquidity requirements (20% Down Payment + 6% Stamp Duty + Legal Fees) so users understand total acquisition costs.
-4. **Compounding Wealth Goal Simulator:**  
-   Allows users to define custom financial milestones (Retirement, House, Education) and calculates required monthly SIP contributions under both zero-growth linear models and compound interest models, displaying dynamic progress rings.
-5. **Multi-Currency Real-Time FX Conversion:**  
-   Facilitates cross-currency asset valuation across INR, USD, EUR, and GBP with instant exchange rate calculation, demonstrating foreign exchange risk in international portfolios.
-6. **Non-Blocking Asynchronous CSV Data Export Engine:**  
-   Offloads disk I/O file generation to independent worker threads (`new Thread(...).start()`), exporting audit-ready CSV reports for holdings and transactions with safe `Platform.runLater()` desktop notifications.
+1. **Integrated 5-Section Fintech Architecture:** Eliminates fragmented screens by organizing all core capabilities into 5 intuitive modules with unified data reactivity.
+2. **Interactive Salary Allocation & Advisor Q&A:** Mathematically distributes any user salary into precise rupee amounts for living expenses and diversified investments, backed by an interactive advisory Q&A assistant.
+3. **Comprehensive Loans & Securities Pledging Suite:** Features institutional Loan against Stocks (50% LTV) and Mutual Funds alongside Home Mortgage and Personal Loan affordability analysis.
+4. **Institutional Stock Fundamentals & Multi-Timeframe Charts:** Real-world corporate metrics (Market Cap, ROI, Book Value, Volume, P/E) paired with multi-timeframe charts (`1D` intraday volatility vs. `ALL` multi-year exponential compound growth).
+5. **Multi-Utility Financial Toolkit:** Built-in SIP calculator, lumpsum compounding simulator, real-time FX currency converter, and milestone goal tracker in one workspace.
+6. **Non-Blocking Asynchronous CSV File Exporter & Multithreaded Engine:** Smooth, responsive user experience powered by background execution threads for market price simulation and data file exports.
 
 ---
 
 ## 🧪 7. Running Unit Tests
 
 The test suite includes **46 automated unit tests** verifying all business calculations and edge cases:
-- `TradingServiceTest` (15 tests: Buy/Sell math, fee deduction, limit order triggering, insufficient funds).
+- `TradingServiceTest` (15 tests: Buy/Sell math, fee deduction, limit order triggering, cash validation).
 - `PortfolioServiceTest` (8 tests: Cost basis averaging, realized/unrealized P/L, portfolio summary).
 - `MarketServiceTest` (6 tests: Mock price movement bounds, watchlist persistence, quote generation).
 - `MarketAnalyticsServiceTest` (5 tests: SMA windows, percentage changes, volatility calculation).
@@ -127,6 +146,7 @@ The test suite includes **46 automated unit tests** verifying all business calcu
 
 To run all unit tests:
 ```powershell
+$env:JAVA_HOME = "C:\Users\Mrunmayee\.jdks\ms-21.0.12.1"
 mvn test
 ```
 **Expected Result:**
@@ -135,4 +155,3 @@ mvn test
 [INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
-

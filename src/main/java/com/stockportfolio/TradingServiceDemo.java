@@ -30,7 +30,7 @@ public class TradingServiceDemo {
 
         System.out.println("Account ID: " + trading.getTrader().getUserId());
 
-        System.out.println("\n1. Deposit 5000 (virtual)");
+        System.out.println("\n1. Deposit 5000");
         trading.deposit(new BigDecimal("5000"));
         printStatus(trading);
 

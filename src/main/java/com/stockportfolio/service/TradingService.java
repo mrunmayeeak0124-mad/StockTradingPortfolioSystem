@@ -170,6 +170,20 @@ public class TradingService {
         return order;
     }
 
+    public Order placeOrder(Asset asset, TransactionType side, OrderType type, int quantity,
+                            BigDecimal limitPrice) throws TradingException {
+        if (type == OrderType.MARKET) {
+            placeMarketOrder(side, asset, quantity);
+            return orders.get(orders.size() - 1);
+        } else {
+            return placeLimitOrder(side, asset, quantity, limitPrice);
+        }
+    }
+
+    public Transaction depositFunds(BigDecimal amount) {
+        return deposit(amount);
+    }
+
     /** Cancels a PENDING order. Cancelled orders are never executed. */
     public Order cancelOrder(String orderId) throws TradingException {
         Order order = findOrder(orderId);
